@@ -261,3 +261,39 @@ function drawObstacles() {
 }
 
 // (Vous pouvez ajouter d'autres fonctions spécifiques comme gérer les cœurs bonus, la transition des niveaux, etc.)
+// shared.js
+
+// Générer des étoiles rouges vifs et grises pour le niveau 2
+function generateStarsLevel2() {
+    stars = [];
+    for (let i = 0; i < numberOfStars; i++) {
+        const size = (Math.random() * 3 + 1) * scaleFactor;
+        const speed = size / 2;
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        const color = Math.random() < 0.5 ? "red" : "gray"; // Étoiles rouges ou grises
+        stars.push({ x, y, size, speed, color });
+    }
+}
+
+// Mettre à jour les positions des étoiles du niveau 2
+function updateStarsLevel2() {
+    stars.forEach(star => {
+        star.y += star.speed;
+        if (star.y > canvas.height) {
+            star.y = 0;
+            star.x = Math.random() * canvas.width;
+        }
+    });
+}
+
+// Dessiner les étoiles spécifiques au niveau 2
+function drawStarsLevel2() {
+    stars.forEach(star => {
+        ctx.beginPath();
+        ctx.fillStyle = star.color; // Utiliser la couleur (rouge ou grise)
+        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.closePath();
+    });
+}
