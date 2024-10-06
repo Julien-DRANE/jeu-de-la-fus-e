@@ -1,5 +1,4 @@
 // level1.js
-// Logique spécifique pour le niveau 1
 
 // Fonction principale de la boucle de jeu pour le niveau 1
 function gameLoopLevel1() {
@@ -20,7 +19,7 @@ function gameLoopLevel1() {
     drawRocket();      // Dessiner la fusée
 
     // Incrémenter le temps écoulé dans le niveau 1
-    elapsedTimeLevel1 += 0.016; // Approximation de l'incrémentation du temps en secondes
+    elapsedTimeLevel1 += 0.016; // Utilisation de la variable `elapsedTimeLevel1` globale
 
     // Passer au niveau 2 après 140 secondes
     if (elapsedTimeLevel1 >= 140) {
@@ -34,7 +33,6 @@ function gameLoopLevel1() {
 
 // Fonction pour démarrer le niveau 1
 function startLevel1() {
-    // Initialiser les variables du niveau 1
     rocket = { ...initialRocket }; // Réinitialiser la fusée à sa position initiale
     generateStars();               // Générer les étoiles du décor pour le niveau 1
     generatePlanet();              // Générer la première planète du décor
@@ -42,5 +40,5 @@ function startLevel1() {
     gameLoopLevel1();              // Démarrer la boucle principale du niveau 1
 }
 
-// Démarrer le niveau 1 quand le script est chargé
+// Démarrer le niveau 1
 startLevel1();
