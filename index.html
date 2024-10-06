@@ -2,19 +2,12 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Colorful Rocket Game</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <title>Colorful Rocket Game</title>
+    <link rel="stylesheet" href="style.css"> <!-- Votre CSS -->
 </head>
 <body>
     <div id="menuBackground"></div>
-
-    <audio id="backgroundMusic" loop>
-        <source src="soft-music.mp3" type="audio/mpeg">
-        <source src="soft-music.ogg" type="audio/ogg">
-        Votre navigateur ne supporte pas l'élément audio.
-    </audio>
-
     <button id="startButton">Jouer</button>
     <canvas id="gameCanvas"></canvas>
 
@@ -30,6 +23,7 @@
         <ol id="highScoresList"></ol>
     </div>
 
+    <!-- Chargement des fichiers JavaScript -->
     <script src="shared.js"></script>
     <script src="main.js"></script>
     <script src="level1.js"></script>
