@@ -9,11 +9,12 @@ const scaleFactor = 4 / 6; // Réduction de la taille par un facteur de 4/6 (≈
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// Variables communes
+// Déclaration des variables globales
 let rocket = {};
 let obstacles = [];
 let stars = [];
 let lives = 3;
+let numberOfStars = 100; // Nombre d'étoiles pour le décor
 
 // Fonction pour dessiner la fusée
 function drawRocket() {
