@@ -1,6 +1,7 @@
 // shared.js
+// Centralisation des fonctions et variables globales
 
-// Initialisation du canvas et du contexte
+// Canvas et contexte
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
@@ -27,25 +28,18 @@ let obstacles = [];
 let stars = [];
 let planet = null;
 let moon = null;
-let elapsedTime = 0; // Temps global
-let elapsedTimeLevel1 = 0; // Temps spécifique au niveau 1
-let elapsedTimeLevel2 = 0; // Temps spécifique au niveau 2
+let elapsedTime = 0;
+let elapsedTimeLevel1 = 0;  // Temps spécifique au niveau 1
+let elapsedTimeLevel2 = 0;  // Temps spécifique au niveau 2
 let score = 0;
 let lives = 3;
-let highScores = [];
-let bonusHeart = null;
-
-// Variables pour la gestion tactile
-let touchActive = false;
-let touchX = 0;
-let touchY = 0;
 
 // Charger les images
 const rocketImage = new Image();
 rocketImage.src = "rocket.png";
 
 // Charger les images des obstacles
-const obstacleImages = ["unicorn.png", "koala.png", "crocodile.png", "yaourt.png", "tarte.png", "soupe.png", "glace.png"].map(src => {
+const obstacleImages = ["unicorn.png", "koala.png", "crocodile.png"].map(src => {
     const img = new Image();
     img.src = src;
     return img;
@@ -58,35 +52,56 @@ planetImage.src = "planet.png";
 const moonImage = new Image();
 moonImage.src = "lune.png";
 
-const venusImage = new Image();
-venusImage.src = "venus.png";
-const marsImage = new Image();
-marsImage.src = "mars.png";
-const mercuryImage = new Image();
-mercuryImage.src = "mercury.png";
-
-// Charger les images des vies
-const heartImage = new Image();
-heartImage.src = "coeur.png";
-
 // Charger les sons
 const collisionSound = new Audio('collision.mp3');
 const extraLifeSound = new Audio('extra.mp3');
 
-// Fonction de déplacement de la fusée (partagée par les deux niveaux)
-function moveRocket() {
-    if (!touchActive) {
-        rocket.dx *= rocket.friction;
-        rocket.dy *= rocket.friction;
-
-        if (rocket.dx > rocket.maxSpeed) rocket.dx = rocket.maxSpeed;
-        if (rocket.dx < -rocket.maxSpeed) rocket.dx = -rocket.maxSpeed;
-        if (rocket.dy > rocket.maxSpeed) rocket.dy = rocket.maxSpeed;
-        if (rocket.dy < -rocket.maxSpeed) rocket.dy = -rocket.maxSpeed;
-
-        rocket.x += rocket.dx;
-        rocket.y += rocket.dy;
+// Fonction pour générer des étoiles aléatoires
+function generateStars() {
+    stars = [];
+    for (let i = 0; i < numberOfStars; i++) {
+        const size = (Math.random() * 3 + 1) * scaleFactor;
+        const speed = size / 2;
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        stars.push({ x, y, size, speed });
     }
+}
+
+// Fonction pour mettre à jour les étoiles
+function updateStars() {
+    stars.forEach(star => {
+        star.y += star.speed;
+        if (star.y > canvas.height) {
+            star.y = 0;
+            star.x = Math.random() * canvas.width;
+        }
+    });
+}
+
+// Fonction pour dessiner les étoiles
+function drawStars() {
+    stars.forEach(star => {
+        ctx.beginPath();
+        ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.closePath();
+    });
+}
+
+// Fonction de déplacement de la fusée
+function moveRocket() {
+    rocket.dx *= rocket.friction;
+    rocket.dy *= rocket.friction;
+
+    if (rocket.dx > rocket.maxSpeed) rocket.dx = rocket.maxSpeed;
+    if (rocket.dx < -rocket.maxSpeed) rocket.dx = -rocket.maxSpeed;
+    if (rocket.dy > rocket.maxSpeed) rocket.dy = rocket.maxSpeed;
+    if (rocket.dy < -rocket.maxSpeed) rocket.dy = -rocket.maxSpeed;
+
+    rocket.x += rocket.dx;
+    rocket.y += rocket.dy;
 
     if (rocket.x < 0) rocket.x = 0;
     if (rocket.x + rocket.width > canvas.width) rocket.x = canvas.width - rocket.width;
@@ -94,5 +109,4 @@ function moveRocket() {
     if (rocket.y + rocket.height > canvas.height) rocket.y = canvas.height - rocket.height;
 }
 
-// Fonctions utilitaires pour le dessin, les collisions, etc.
-// (Restant inchangées)
+// Autres fonctions de gestion des obstacles, décor et gestion du jeu...
