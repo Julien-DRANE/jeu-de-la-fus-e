@@ -1,13 +1,11 @@
-// level2.js
-// Logique spécifique pour le niveau 2
 
+// level2.js
 const level2Music = new Audio('musique2.mp3');
 level2Music.volume = 1.0;
 
 let currentPlanet = null;
 const planets = [venusImage, marsImage, mercuryImage];
 
-// Générer une planète au hasard parmi celles du niveau 2
 function generatePlanetLevel2() {
     const width = 400 * scaleFactor;
     const height = 400 * scaleFactor;
@@ -22,7 +20,6 @@ function generatePlanetLevel2() {
     };
 }
 
-// Mettre à jour la position de la planète dans le niveau 2
 function updatePlanetLevel2() {
     if (currentPlanet) {
         currentPlanet.y += currentPlanet.speed;
@@ -36,14 +33,12 @@ function updatePlanetLevel2() {
     }
 }
 
-// Dessiner la planète dans le niveau 2
 function drawPlanetLevel2() {
     if (currentPlanet) {
         ctx.drawImage(currentPlanet.image, currentPlanet.x, currentPlanet.y, currentPlanet.width, currentPlanet.height);
     }
 }
 
-// Générer des étoiles pour le niveau 2
 function generateStarsLevel2() {
     stars = [];
     for (let i = 0; i < numberOfStars; i++) {
@@ -51,12 +46,11 @@ function generateStarsLevel2() {
         const speed = size / 2;
         const x = Math.random() * canvas.width;
         const y = Math.random() * canvas.height;
-        const color = Math.random() < 0.5 ? "red" : "gray"; // Étoiles rouges ou grises
+        const color = Math.random() < 0.5 ? "red" : "gray";
         stars.push({ x, y, size, speed, color });
     }
 }
 
-// Dessiner les étoiles dans le niveau 2
 function drawStarsLevel2() {
     stars.forEach(star => {
         ctx.beginPath();
@@ -67,7 +61,6 @@ function drawStarsLevel2() {
     });
 }
 
-// Mettre à jour les obstacles du niveau 2
 function updateObstaclesLevel2() {
     for (let i = obstacles.length - 1; i >= 0; i--) {
         let obstacle = obstacles[i];
@@ -93,7 +86,6 @@ function updateObstaclesLevel2() {
     }
 }
 
-// Fonction principale de la boucle de jeu pour le niveau 2
 function gameLoopLevel2() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -110,7 +102,6 @@ function gameLoopLevel2() {
     requestAnimationFrame(gameLoopLevel2);
 }
 
-// Fonction pour démarrer le niveau 2
 function startLevel2() {
     rocket = { ...initialRocket };
     generateStarsLevel2();
@@ -118,5 +109,4 @@ function startLevel2() {
     level2Music.play();
 }
 
-// Démarrer le niveau 2 quand le script est chargé
 startLevel2();
