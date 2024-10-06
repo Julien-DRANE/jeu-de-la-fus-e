@@ -1,3 +1,4 @@
+// level1.js
 function gameLoopLevel1() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     moveRocket();
