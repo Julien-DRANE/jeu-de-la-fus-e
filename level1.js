@@ -2,6 +2,8 @@
 // level1.js
 // Logique spécifique pour le niveau 1
 
+let elapsedTimeLevel1 = 0; // Temps écoulé en secondes
+
 // Charger les images de la fusée et des obstacles
 const rocketImage = new Image();
 rocketImage.src = "rocket.png";
@@ -23,6 +25,14 @@ function gameLoopLevel1() {
     drawStars();
     drawObstacles();
     drawRocket();
+
+    elapsedTimeLevel1 += 0.016; // Approximation de l'incrémentation du temps en secondes
+
+    // Passer au niveau 2 après 140 secondes
+    if (elapsedTimeLevel1 >= 140) {
+        switchToLevel2();
+        return;
+    }
 
     requestAnimationFrame(gameLoopLevel1);
 }
