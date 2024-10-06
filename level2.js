@@ -1,35 +1,37 @@
 // level2.js
 // Logique spécifique pour le niveau 2
 
-let currentPlanet = null; // Planète actuelle dans le niveau 2
-const planets = [venusImage, marsImage, mercuryImage];
+// Charger la musique spécifique au niveau 2
+const level2Music = new Audio('musique2.mp3');
+level2Music.volume = 1.0;
+
+let currentPlanet = null; // Variable pour la planète actuelle dans le niveau 2
+const planets = [venusImage, marsImage, mercuryImage]; // Liste des planètes du niveau 2
 
 function gameLoopLevel2() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // Effacer le canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Mettre à jour les éléments du niveau 2
     moveRocket();
-    updateStarsLevel2();    // Fonction spécifique pour le niveau 2
+    updateStarsLevel2();    // Mise à jour des étoiles du niveau 2
     updatePlanetLevel2();   // Mise à jour des planètes
-    updateObstacles();      // Mettre à jour les obstacles
+    updateObstacles();      // Mettre à jour les obstacles du niveau 2
 
-    // Dessiner les éléments du niveau 2
-    drawStarsLevel2();      // Dessiner les étoiles rouges/grises
-    drawPlanetLevel2();     // Dessiner la planète
-    drawObstacles();        // Dessiner les obstacles
+    drawStarsLevel2();      // Dessiner les étoiles rouges et grises
+    drawPlanetLevel2();     // Dessiner la planète en arrière-plan
+    drawObstacles();        // Dessiner les obstacles spécifiques au niveau 2
     drawRocket();           // Dessiner la fusée
 
-    elapsedTimeLevel2 += 0.016; 
+    elapsedTimeLevel2 += 0.016; // Incrémenter le temps
 
     // Boucle d'animation continue
     requestAnimationFrame(gameLoopLevel2);
 }
 
-// Fonction pour démarrer le niveau 2
+// Démarrer le niveau 2
 function startLevel2() {
-    rocket = { ...initialRocket };
-    generateStarsLevel2();   // Générer des étoiles spécifiques au niveau 2
-    gameLoopLevel2();        // Démarrer la boucle du niveau 2
+    rocket = { ...initialRocket };    // Réinitialiser la fusée
+    generateStarsLevel2();            // Appeler generateStarsLevel2 défini dans shared.js
+    gameLoopLevel2();                 // Démarrer la boucle principale du niveau 2
 }
 
 startLevel2();
