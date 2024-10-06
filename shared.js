@@ -13,12 +13,12 @@ let numberOfStars = 100;
 let difficultyLevel = 1;
 let obstacleSpeedMultiplier = 1;
 
-// Déclaration des variables globales avec `let` pour éviter les conflits
+// Initialisation des variables avant utilisation
 let rocket, obstacles, stars, planet, moon, currentPlanet, bonusHeart, lives, highScores, score;
 let elapsedTime = 0, elapsedTimeLevel1 = 0, elapsedTimeLevel2 = 0;
 let touchActive = false, touchX = 0, touchY = 0;
 
-// Déclaration des images (assurez-vous que ces fichiers sont dans le même répertoire)
+// Initialisation des images (après déclaration)
 const rocketImage = new Image();
 rocketImage.src = "rocket.png";
 
@@ -31,6 +31,7 @@ moonImage.src = "lune.png";
 const heartImage = new Image();
 heartImage.src = "coeur.png";
 
+// Déclaration des images des planètes du niveau 2
 const venusImage = new Image();
 venusImage.src = "venus.png";
 
@@ -40,18 +41,19 @@ marsImage.src = "mars.png";
 const mercuryImage = new Image();
 mercuryImage.src = "mercury.png";
 
+// Initialisation après la déclaration des images pour éviter les conflits
+const planets = [venusImage, marsImage, mercuryImage]; // Planètes pour le niveau 2
+
+// Chargement des sons
+const collisionSound = new Audio('collision.mp3');
+const extraLifeSound = new Audio('extra.mp3');
+
+// Initialiser les obstacles après déclaration de toutes les images
 const obstacleImages = ["unicorn.png", "koala.png", "crocodile.png", "yaourt.png", "tarte.png", "soupe.png", "glace.png"].map(src => {
     const img = new Image();
     img.src = src;
     return img;
 });
-
-// Tableau des planètes pour le niveau 2 (après l'initialisation des images)
-const planets = [venusImage, marsImage, mercuryImage];
-
-// Chargement des sons
-const collisionSound = new Audio('collision.mp3');
-const extraLifeSound = new Audio('extra.mp3');
 
 // Générer des étoiles aléatoires pour les niveaux 1 et 2
 function generateStars() {
@@ -122,7 +124,21 @@ function drawPlanet() {
     }
 }
 
-// Mettre à jour la position de la lune
+// Générer la lune pour le niveau 1
+function generateMoon() {
+    const width = 800 * scaleFactor;
+    const height = 800 * scaleFactor;
+    const x = Math.random() * (canvas.width - width);
+    moon = {
+        x: x,
+        y: -1600 * scaleFactor,
+        width: width,
+        height: height,
+        speed: 0.2 * scaleFactor
+    };
+}
+
+// Mettre à jour la position de la lune pour le niveau 1
 function updateMoon() {
     if (moon) {
         moon.y += moon.speed;
@@ -132,41 +148,47 @@ function updateMoon() {
     }
 }
 
-// Déclarer les autres fonctions spécifiques du niveau 2 (comme `generatePlanetLevel2`, `updatePlanetLevel2`, etc.)
-// Générer une planète pour le niveau 2
-function generatePlanetLevel2() {
-    const width = 400 * scaleFactor;
-    const height = 400 * scaleFactor;
-    const x = Math.random() * (canvas.width - width);
-    currentPlanet = {
-        image: planets[Math.floor(Math.random() * planets.length)], // Sélectionner une planète aléatoire
-        x: x,
-        y: -800 * scaleFactor, // Positionner la planète hors de l'écran
-        width: width,
-        height: height,
-        speed: 0.5 * scaleFactor
-    };
-}
-
-// Mettre à jour la position de la planète du niveau 2
-function updatePlanetLevel2() {
-    if (currentPlanet) {
-        currentPlanet.y += currentPlanet.speed;
-        if (currentPlanet.y > canvas.height) {
-            currentPlanet = null;
-        }
-    } else {
-        if (Math.random() < 0.002) {
-            generatePlanetLevel2();
-        }
+// Dessiner la lune
+function drawMoon() {
+    if (moon) {
+        ctx.drawImage(moonImage, moon.x, moon.y, moon.width, moon.height);
     }
 }
 
-// Dessiner la planète du niveau 2
-function drawPlanetLevel2() {
-    if (currentPlanet) {
-        ctx.drawImage(currentPlanet.image, currentPlanet.x, currentPlanet.y, currentPlanet.width, currentPlanet.height);
-    }
+// Déplacer la fusée
+function moveRocket() {
+    rocket.dx *= rocket.friction;
+    rocket.dy *= rocket.friction;
+
+    if (rocket.dx > rocket.maxSpeed) rocket.dx = rocket.maxSpeed;
+    if (rocket.dx < -rocket.maxSpeed) rocket.dx = -rocket.maxSpeed;
+    if (rocket.dy > rocket.maxSpeed) rocket.dy = rocket.maxSpeed;
+    if (rocket.dy < -rocket.maxSpeed) rocket.dy = -rocket.maxSpeed;
+
+    rocket.x += rocket.dx;
+    rocket.y += rocket.dy;
+
+    if (rocket.x < 0) rocket.x = 0;
+    if (rocket.x + rocket.width > canvas.width) rocket.x = canvas.width - rocket.width;
+    if (rocket.y < 0) rocket.y = 0;
+    if (rocket.y + rocket.height > canvas.height) rocket.y = canvas.height - rocket.height;
+}
+
+// Détecter les collisions
+function detectCollision(obj1, obj2) {
+    if (!obj2) return false;
+
+    const obj1CenterX = obj1.x + obj1.width / 2;
+    const obj1CenterY = obj1.y + obj1.height / 2;
+    const obj2CenterX = obj2.x + obj2.size / 2;
+    const obj2CenterY = obj2.y + obj2.size / 2;
+
+    const deltaX = obj1CenterX - obj2CenterX;
+    const deltaY = obj1CenterY - obj2CenterY;
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+    const collisionThreshold = (obj1.width / 2) + (obj2.size / 2) + (30 * scaleFactor);
+    return distance < collisionThreshold;
 }
 
 // Générer les obstacles
