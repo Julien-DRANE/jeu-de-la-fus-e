@@ -99,6 +99,17 @@ function generateStars() {
     }
 }
 
+// Mettre à jour la position des étoiles pour le niveau 2
+function updateStarsLevel2() {
+    stars.forEach(star => {
+        star.y += star.speed;
+        if (star.y > canvas.height) {
+            star.y = 0;
+            star.x = Math.random() * canvas.width;
+        }
+    });
+}
+
 // Mettre à jour la position des étoiles
 function updateStars() {
     stars.forEach(star => {
