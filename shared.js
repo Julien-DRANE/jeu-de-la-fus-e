@@ -26,9 +26,13 @@ let rocket = { ...initialRocket };
 let obstacles = [];
 let stars = [];
 
+// Déclaration des variables nécessaires pour les interactions tactiles
+let touchActive = false; // Ajoutez cette ligne
+let touchX = 0;
+let touchY = 0;
+
 const rocketImage = new Image();
 rocketImage.src = "rocket.png";
-
 const obstacleImages = ["unicorn.png", "koala.png", "crocodile.png", "yaourt.png", "tarte.png", "soupe.png", "glace.png"].map(src => {
     const img = new Image();
     img.src = src;
