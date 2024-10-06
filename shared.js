@@ -3,13 +3,23 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-const scaleFactor = 4 / 6; 
+const scaleFactor = 4 / 6;
 
 // Variables globales
-let numberOfStars = 100; 
+let numberOfStars = 100;
 let difficultyLevel = 1;
 let obstacleSpeedMultiplier = 1;
-let initialRocket = { x: canvas.width / 2 - (25 * scaleFactor), y: canvas.height - (150 * scaleFactor), width: 50 * scaleFactor, height: 100 * scaleFactor, dx: 0, dy: 0, acceleration: 1.5 * scaleFactor, maxSpeed: 15 * scaleFactor, friction: 0.93 };
+let initialRocket = {
+    x: canvas.width / 2 - (25 * scaleFactor),
+    y: canvas.height - (150 * scaleFactor),
+    width: 50 * scaleFactor,
+    height: 100 * scaleFactor,
+    dx: 0,
+    dy: 0,
+    acceleration: 1.5 * scaleFactor,
+    maxSpeed: 15 * scaleFactor,
+    friction: 0.93
+};
 let rocket = { ...initialRocket };
 let obstacles = [];
 let stars = [];
@@ -109,6 +119,17 @@ function updateStars() {
     });
 }
 
+// Mettre à jour les étoiles pour le niveau 2
+function updateStarsLevel2() {
+    stars.forEach(star => {
+        star.y += star.speed;
+        if (star.y > canvas.height) {
+            star.y = 0;
+            star.x = Math.random() * canvas.width;
+        }
+    });
+}
+
 // Déplacer la fusée
 function moveRocket() {
     if (!touchActive) {
@@ -139,7 +160,7 @@ function generateObstacle() {
     obstacles.push({ x, y: -size, size, speed, image: obstacleImages[imageIndex] });
 }
 
-// Mettre à jour les obstacles
+// Mettre à jour les obstacles pour le niveau 1 et le niveau 2
 function updateObstacles() {
     for (let i = obstacles.length - 1; i >= 0; i--) {
         let obstacle = obstacles[i];
@@ -187,4 +208,4 @@ function detectCollision(obj1, obj2) {
     return distance < collisionThreshold;
 }
 
-// Autres fonctions supplémentaires...
+// Autres fonctions supplémentaires pour bonus, vies, etc.
