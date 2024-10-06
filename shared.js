@@ -297,3 +297,41 @@ function drawStarsLevel2() {
         ctx.closePath();
     });
 }
+// shared.js
+
+// Générer une planète pour le niveau 2 parmi celles disponibles (Venus, Mars, Mercure)
+function generatePlanetLevel2() {
+    const width = 400 * scaleFactor;
+    const height = 400 * scaleFactor;
+    const x = Math.random() * (canvas.width - width);
+    currentPlanet = {
+        image: planets[Math.floor(Math.random() * planets.length)], // Sélectionner une planète aléatoire
+        x: x,
+        y: -800 * scaleFactor, // Positionner la planète hors de l'écran
+        width: width,
+        height: height,
+        speed: 0.5 * scaleFactor // Vitesse de descente
+    };
+}
+
+// Mettre à jour la position de la planète dans le niveau 2
+function updatePlanetLevel2() {
+    if (currentPlanet) {
+        currentPlanet.y += currentPlanet.speed;
+        if (currentPlanet.y > canvas.height) {
+            currentPlanet = null; // Supprimer la planète si elle sort de l'écran
+        }
+    } else {
+        if (Math.random() < 0.002) {
+            generatePlanetLevel2(); // Générer une nouvelle planète avec une faible probabilité
+        }
+    }
+}
+
+// Dessiner la planète dans le niveau 2
+function drawPlanetLevel2() {
+    if (currentPlanet) {
+        ctx.drawImage(currentPlanet.image, currentPlanet.x, currentPlanet.y, currentPlanet.width, currentPlanet.height);
+    }
+}
+
