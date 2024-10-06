@@ -18,7 +18,21 @@ let rocket, obstacles, stars, planet, moon, currentPlanet, bonusHeart, lives, hi
 let elapsedTime = 0, elapsedTimeLevel1 = 0, elapsedTimeLevel2 = 0;
 let touchActive = false, touchX = 0, touchY = 0;
 
-// Initialisation des images (après déclaration)
+// Initialisation de la fusée (doit être définie avant toute utilisation)
+const initialRocket = {
+    x: canvas.width / 2 - (25 * scaleFactor),
+    y: canvas.height - (150 * scaleFactor),
+    width: 50 * scaleFactor,
+    height: 100 * scaleFactor,
+    dx: 0,
+    dy: 0,
+    acceleration: 1.5 * scaleFactor,
+    maxSpeed: 15 * scaleFactor,
+    friction: 0.93
+};
+rocket = { ...initialRocket };
+
+// Chargement des images (ne pas redéclarer plusieurs fois)
 const rocketImage = new Image();
 rocketImage.src = "rocket.png";
 
@@ -31,7 +45,7 @@ moonImage.src = "lune.png";
 const heartImage = new Image();
 heartImage.src = "coeur.png";
 
-// Déclaration des images des planètes du niveau 2
+// Images des planètes pour le niveau 2
 const venusImage = new Image();
 venusImage.src = "venus.png";
 
@@ -48,7 +62,7 @@ const planets = [venusImage, marsImage, mercuryImage]; // Planètes pour le nive
 const collisionSound = new Audio('collision.mp3');
 const extraLifeSound = new Audio('extra.mp3');
 
-// Initialiser les obstacles après déclaration de toutes les images
+// Initialisation des obstacles après déclaration de toutes les images
 const obstacleImages = ["unicorn.png", "koala.png", "crocodile.png", "yaourt.png", "tarte.png", "soupe.png", "glace.png"].map(src => {
     const img = new Image();
     img.src = src;
@@ -232,35 +246,3 @@ function drawObstacles() {
         ctx.drawImage(obstacle.image, obstacle.x, obstacle.y, obstacle.size, obstacle.size);
     });
 }
-// shared.js
-
-// Initialisation du canvas et du contexte (assurez-vous que cette partie est déjà présente)
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-// Définir initialRocket et d'autres variables globales
-const initialRocket = {
-    x: canvas.width / 2 - (25 * scaleFactor),
-    y: canvas.height - (150 * scaleFactor),
-    width: 50 * scaleFactor,
-    height: 100 * scaleFactor,
-    dx: 0,
-    dy: 0,
-    acceleration: 1.5 * scaleFactor,
-    maxSpeed: 15 * scaleFactor,
-    friction: 0.93
-};
-
-// Initialiser la variable rocket avec la position initiale
-let rocket = { ...initialRocket };
-
-// Autres variables globales que vous souhaitez partager
-let obstacles = [];
-let stars = [];
-let planet = null;
-let moon = null;
-let currentPlanet = null;
-let elapsedTimeLevel1 = 0;  // Temps spécifique au niveau 1
-let elapsedTimeLevel2 = 0;  // Temps spécifique au niveau 2
