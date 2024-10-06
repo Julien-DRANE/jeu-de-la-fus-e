@@ -49,3 +49,9 @@ function moveRocket() {
     if (rocket.y < 0) rocket.y = 0;
     if (rocket.y + rocket.height > canvas.height) rocket.y = canvas.height - rocket.height;
 }
+function loadHighScores() {
+    const storedScores = localStorage.getItem('highScores');
+    if (storedScores) {
+        highScores = JSON.parse(storedScores);
+    }
+}
