@@ -1,4 +1,3 @@
-
 // level1.js
 // Logique spécifique pour le niveau 1
 
@@ -29,7 +28,6 @@ function gameLoopLevel1() {
 
 // Fonction pour démarrer le niveau 1
 function startLevel1() {
-    // Initialiser les variables du niveau 1
     rocket = { ...initialRocket };
     generateStars();
     gameLoopLevel1();
