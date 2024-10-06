@@ -130,4 +130,61 @@ function moveRocket() {
     if (rocket.y + rocket.height > canvas.height) rocket.y = canvas.height - rocket.height;
 }
 
-// Autres fonctions pour les obstacles, planètes, etc.
+// Générer des obstacles
+function generateObstacle() {
+    const size = (Math.random() * 50 + 30) * scaleFactor;
+    const x = Math.random() * (canvas.width - size);
+    const speed = (Math.random() * 3 + 2) * obstacleSpeedMultiplier * scaleFactor;
+    const imageIndex = Math.floor(Math.random() * obstacleImages.length);
+    obstacles.push({ x, y: -size, size, speed, image: obstacleImages[imageIndex] });
+}
+
+// Mettre à jour les obstacles
+function updateObstacles() {
+    for (let i = obstacles.length - 1; i >= 0; i--) {
+        let obstacle = obstacles[i];
+        obstacle.y += obstacle.speed;
+
+        if (obstacle.y > canvas.height) {
+            obstacles.splice(i, 1);
+            continue;
+        }
+        if (detectCollision(rocket, obstacle)) {
+            obstacles.splice(i, 1);
+            lives -= 1;
+
+            collisionSound.currentTime = 0;
+            collisionSound.play();
+
+            if (lives <= 0) {
+                score = elapsedTime / 10;
+                displayGameOver();
+                break;
+            }
+        }
+    }
+}
+
+// Dessiner les obstacles
+function drawObstacles() {
+    obstacles.forEach(obstacle => {
+        ctx.drawImage(obstacle.image, obstacle.x, obstacle.y, obstacle.size, obstacle.size);
+    });
+}
+
+// Détecter les collisions entre la fusée et les obstacles
+function detectCollision(obj1, obj2) {
+    const obj1CenterX = obj1.x + obj1.width / 2;
+    const obj1CenterY = obj1.y + obj1.height / 2;
+    const obj2CenterX = obj2.x + obj2.size / 2;
+    const obj2CenterY = obj2.y + obj2.size / 2;
+
+    const deltaX = obj1CenterX - obj2CenterX;
+    const deltaY = obj1CenterY - obj2CenterY;
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+    const collisionThreshold = (obj1.width / 2) + (obj2.size / 2) + (30 * scaleFactor);
+    return distance < collisionThreshold;
+}
+
+// Autres fonctions supplémentaires...
