@@ -1,4 +1,3 @@
-
 // shared.js
 // Centralisation des images, sons, variables globales, et fonctions partagées
 
@@ -167,6 +166,41 @@ function drawStarsLevel2() {
         ctx.fill();
         ctx.closePath();
     });
+}
+
+// Gérer les obstacles : génération et mise à jour
+function generateObstacle() {
+    const size = (Math.random() * 50 + 30) * scaleFactor;
+    const x = Math.random() * (canvas.width - size);
+    const speed = (Math.random() * 3 + 2) * obstacleSpeedMultiplier * scaleFactor;
+    const image = obstacleImages[Math.floor(Math.random() * obstacleImages.length)];
+    const obstacle = { x, y: -size, size, speed, image };
+    obstacles.push(obstacle);
+}
+
+function updateObstacles() {
+    for (let i = obstacles.length - 1; i >= 0; i--) {
+        let obstacle = obstacles[i];
+        obstacle.y += obstacle.speed;
+
+        if (obstacle.y > canvas.height) {
+            obstacles.splice(i, 1);
+            continue;
+        }
+        if (detectCollision(rocket, obstacle)) {
+            obstacles.splice(i, 1);
+            lives -= 1;
+
+            collisionSound.currentTime = 0;
+            collisionSound.play();
+
+            if (lives <= 0) {
+                score = elapsedTime / 10;
+                displayGameOver();
+                break;
+            }
+        }
+    }
 }
 
 // Gérer les collisions avec tolérance
