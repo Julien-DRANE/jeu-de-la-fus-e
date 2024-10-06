@@ -203,6 +203,13 @@ function updateObstacles() {
     }
 }
 
+// Dessiner les obstacles
+function drawObstacles() {
+    obstacles.forEach(obstacle => {
+        ctx.drawImage(obstacle.image, obstacle.x, obstacle.y, obstacle.size, obstacle.size);
+    });
+}
+
 // Gérer les collisions avec tolérance
 function detectCollision(obj1, obj2) {
     if (!obj2) return false;
