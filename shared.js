@@ -28,8 +28,8 @@ let stars = [];
 let planet = null;
 let moon = null;
 let elapsedTime = 0;
-let elapsedTimeLevel1 = 0;  // Ajout spécifique pour le niveau 1
-let elapsedTimeLevel2 = 0;  // Ajout spécifique pour le niveau 2
+let elapsedTimeLevel1 = 0;  
+let elapsedTimeLevel2 = 0;  
 let score = 0;
 let lives = 3;
 let highScores = [];
@@ -43,21 +43,29 @@ let touchY = 0;
 // Charger les images
 const rocketImage = new Image();
 rocketImage.src = "rocket.png";
+
+// Charger les images des obstacles
 const obstacleImages = ["unicorn.png", "koala.png", "crocodile.png", "yaourt.png", "tarte.png", "soupe.png", "glace.png"].map(src => {
     const img = new Image();
     img.src = src;
     return img;
 });
+
+// Charger les images du décor
 const planetImage = new Image();
 planetImage.src = "planet.png";
+
 const moonImage = new Image();
 moonImage.src = "lune.png";
+
 const venusImage = new Image();
 venusImage.src = "venus.png";
 const marsImage = new Image();
 marsImage.src = "mars.png";
 const mercuryImage = new Image();
 mercuryImage.src = "mercury.png";
+
+// Charger les images des vies
 const heartImage = new Image();
 heartImage.src = "coeur.png";
 
@@ -99,17 +107,6 @@ function generateStars() {
         const y = Math.random() * canvas.height;
         stars.push({ x, y, size, speed });
     }
-}
-
-// Mettre à jour la position des étoiles pour le niveau 2
-function updateStarsLevel2() {
-    stars.forEach(star => {
-        star.y += star.speed;
-        if (star.y > canvas.height) {
-            star.y = 0;
-            star.x = Math.random() * canvas.width;
-        }
-    });
 }
 
 // Mettre à jour la position des étoiles
@@ -215,19 +212,6 @@ function detectCollision(obj1, obj2) {
 
     const collisionThreshold = (obj1.width / 2) + (obj2.size / 2) + (30 * scaleFactor);
     return distance < collisionThreshold;
-}
-
-// Charger les meilleurs scores depuis le localStorage
-function loadHighScores() {
-    const storedScores = localStorage.getItem('highScores');
-    if (storedScores) {
-        highScores = JSON.parse(storedScores);
-    }
-}
-
-// Enregistrer les meilleurs scores dans le localStorage
-function saveHighScores() {
-    localStorage.setItem('highScores', JSON.stringify(highScores));
 }
 
 // Afficher l'écran de fin de jeu
