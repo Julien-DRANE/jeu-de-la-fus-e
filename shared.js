@@ -1,22 +1,77 @@
 
 // shared.js
-// Contient les fonctions partagées entre les niveaux
+// Contient toutes les fonctions partagées et variables globales
 
+// Canvas et contexte
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+// Facteur de réduction et autres variables
+const scaleFactor = 4 / 6; // Réduction de la taille par un facteur de 4/6 (≈0,6667)
+let numberOfStars = 100; // Nombre d'étoiles pour le décor
+let difficultyLevel = 1;
+let obstacleSpeedMultiplier = 1;
+
 // Variables globales
-let rocket = {};
+let initialRocket = {
+    x: canvas.width / 2 - (25 * scaleFactor),
+    y: canvas.height - (150 * scaleFactor),
+    width: 50 * scaleFactor,
+    height: 100 * scaleFactor,
+    dx: 0,
+    dy: 0,
+    acceleration: 1.5 * scaleFactor,
+    maxSpeed: 15 * scaleFactor,
+    friction: 0.93
+};
+
+let rocket = { ...initialRocket };
 let obstacles = [];
 let stars = [];
-let lives = 3;
+let planet = null;
+let moon = null;
+
+let elapsedTime = 0; // En dixièmes de seconde
+let timerInterval;
+
+let showScore = false;
+let score = 0;
+
 let touchActive = false;
 let touchX = 0;
 let touchY = 0;
 const followSpeed = 10 * scaleFactor; // Vitesse de suivi ajustée
+
+// Charger l'image de la fusée
+const rocketImage = new Image();
+rocketImage.src = "rocket.png";
+
+// Charger les images des obstacles
+const obstacleImages = ["unicorn.png", "koala.png", "crocodile.png"].map(src => {
+    const img = new Image();
+    img.src = src;
+    return img;
+});
+
+// Charger l'image de la planète
+const planetImage = new Image();
+planetImage.src = "planet.png";
+
+// Charger l'image de la lune
+const moonImage = new Image();
+moonImage.src = "lune.png";
+
+// Charger l'image des cœurs pour les vies
+const heartImage = new Image();
+heartImage.src = "coeur.png";
+
+// Charger le son de collision
+const collisionSound = new Audio('collision.mp3');
+
+// Charger le son de vie supplémentaire
+const extraLifeSound = new Audio('extra.mp3');
 
 // Fonction pour dessiner la fusée
 function drawRocket() {
