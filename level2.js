@@ -1,9 +1,14 @@
 // level2.js
+let elapsedTimeLevel2 = 0; // Déclaration de la variable au début du fichier
+
+// Charger la musique spécifique au niveau 2
 const level2Music = new Audio('musique2.mp3');
 level2Music.volume = 1.0;
+
 let currentPlanet = null;
 const planets = [venusImage, marsImage, mercuryImage];
 
+// Générer une planète au hasard parmi celles du niveau 2
 function generatePlanetLevel2() {
     const width = 400 * scaleFactor;
     const height = 400 * scaleFactor;
@@ -18,6 +23,7 @@ function generatePlanetLevel2() {
     };
 }
 
+// Mettre à jour la position de la planète dans le niveau 2
 function updatePlanetLevel2() {
     if (currentPlanet) {
         currentPlanet.y += currentPlanet.speed;
@@ -31,12 +37,14 @@ function updatePlanetLevel2() {
     }
 }
 
+// Dessiner la planète dans le niveau 2
 function drawPlanetLevel2() {
     if (currentPlanet) {
         ctx.drawImage(currentPlanet.image, currentPlanet.x, currentPlanet.y, currentPlanet.width, currentPlanet.height);
     }
 }
 
+// Générer des étoiles rouges vifs et grises pour le niveau 2
 function generateStarsLevel2() {
     stars = [];
     for (let i = 0; i < numberOfStars; i++) {
@@ -49,6 +57,7 @@ function generateStarsLevel2() {
     }
 }
 
+// Dessiner les étoiles avec des couleurs variées dans le niveau 2
 function drawStarsLevel2() {
     stars.forEach(star => {
         ctx.beginPath();
@@ -59,74 +68,50 @@ function drawStarsLevel2() {
     });
 }
 
-function updateSoupObstacle(obstacle) {
-    const amplitude = 20 * scaleFactor;
-    const frequency = 0.05;
-    obstacle.x += amplitude * Math.sin(obstacle.y * frequency);
+// Mettre à jour les étoiles spécifiques du niveau 2
+function updateStarsLevel2() {
+    stars.forEach(star => {
+        star.y += star.speed;
+        if (star.y > canvas.height) {
+            star.y = 0;
+            star.x = Math.random() * canvas.width;
+        }
+    });
 }
 
-function generateObstacleLevel2() {
-    const size = (Math.random() * 50 + 30) * scaleFactor;
-    const x = Math.random() * (canvas.width - size);
-    const speed = (Math.random() * 3 + 2) * obstacleSpeedMultiplier * scaleFactor;
-    const imageIndex = Math.floor(Math.random() * level2ObstacleImages.length);
-    const image = level2ObstacleImages[imageIndex];
-    const obstacle = { x, y: -size, size, speed, image };
-
-    if (image.src.includes("soupe.png")) {
-        obstacle.isSoup = true;
-    }
-
-    obstacles.push(obstacle);
-}
-
-function updateObstaclesLevel2() {
-    for (let i = obstacles.length - 1; i >= 0; i--) {
-        let obstacle = obstacles[i];
-        obstacle.y += obstacle.speed;
-
-        if (obstacle.isSoup) {
-            updateSoupObstacle(obstacle);
-        }
-
-        if (obstacle.y > canvas.height) {
-            obstacles.splice(i, 1);
-            continue;
-        }
-        if (detectCollision(rocket, obstacle)) {
-            obstacles.splice(i, 1);
-            lives -= 1;
-
-            collisionSound.currentTime = 0;
-            collisionSound.play();
-
-            if (lives <= 0) {
-                score = elapsedTime / 10;
-                displayGameOver();
-                break;
-            }
-        }
-    }
-}
-
+// Fonction principale de la boucle de jeu pour le niveau 2
 function gameLoopLevel2() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
     moveRocket();
     updateStarsLevel2();
     updatePlanetLevel2();
-    updateObstaclesLevel2();
+    updateObstacles();
+
     drawStarsLevel2();
     drawPlanetLevel2();
     drawObstacles();
     drawRocket();
+
+    elapsedTimeLevel2 += 0.016; // Approximation de l'incrémentation du temps en secondes
+
     requestAnimationFrame(gameLoopLevel2);
 }
 
+// Fonction pour démarrer le niveau 2
 function startLevel2() {
+    // Initialiser les variables spécifiques au niveau 2
     rocket = { ...initialRocket };
     generateStarsLevel2();
     gameLoopLevel2();
-    level2Music.play();
+
+    // Lancer la musique après une interaction avec l'utilisateur
+    document.body.addEventListener("click", () => {
+        level2Music.play().catch(error => {
+            console.log("Erreur lors de la lecture de la musique :", error);
+        });
+    }, { once: true });
 }
 
+// Démarrer le niveau 2 quand le script est chargé
 startLevel2();
