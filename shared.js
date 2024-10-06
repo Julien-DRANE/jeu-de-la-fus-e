@@ -5,16 +5,14 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-const scaleFactor = 4 / 6; // Réduction de la taille par un facteur de 4/6 (≈0,6667)
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// Déclaration des variables globales
+// Déclaration des variables communes
 let rocket = {};
 let obstacles = [];
 let stars = [];
 let lives = 3;
-let numberOfStars = 100; // Nombre d'étoiles pour le décor
 
 // Fonction pour dessiner la fusée
 function drawRocket() {

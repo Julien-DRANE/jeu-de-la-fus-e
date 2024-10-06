@@ -2,6 +2,10 @@
 // main.js
 // Gestionnaire principal du jeu
 
+// Initialisation des variables globales avant de charger les niveaux
+let numberOfStars = 100; // Nombre d'étoiles pour le décor
+let scaleFactor = 4 / 6; // Facteur de réduction de la taille
+
 let currentLevelScript = null;
 let isSwitchingLevel = false;
 
