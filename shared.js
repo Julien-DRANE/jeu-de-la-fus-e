@@ -20,3 +20,13 @@ mercuryImage.src = "mercury.png";
 function generateStars() { /*...*/ }
 function loadHighScores() { /*...*/ }
 // Other functions...
+function generateStars() {
+    stars = [];
+    for (let i = 0; i < numberOfStars; i++) {
+        const size = (Math.random() * 3 + 1) * scaleFactor;
+        const speed = size / 2;
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        stars.push({ x, y, size, speed });
+    }
+}
