@@ -1,11 +1,13 @@
 // shared.js
+
+// Initialisation du canvas et du contexte
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-const scaleFactor = 4 / 6;
 
 // Variables globales
+const scaleFactor = 4 / 6;
 let numberOfStars = 100;
 let difficultyLevel = 1;
 let obstacleSpeedMultiplier = 1;
@@ -97,18 +99,7 @@ function generateStars() {
     }
 }
 
-// Dessiner les étoiles
-function drawStars() {
-    stars.forEach(star => {
-        ctx.beginPath();
-        ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.closePath();
-    });
-}
-
-// Mettre à jour les étoiles
+// Mettre à jour la position des étoiles
 function updateStars() {
     stars.forEach(star => {
         star.y += star.speed;
@@ -119,14 +110,14 @@ function updateStars() {
     });
 }
 
-// Mettre à jour les étoiles pour le niveau 2
-function updateStarsLevel2() {
+// Dessiner les étoiles
+function drawStars() {
     stars.forEach(star => {
-        star.y += star.speed;
-        if (star.y > canvas.height) {
-            star.y = 0;
-            star.x = Math.random() * canvas.width;
-        }
+        ctx.beginPath();
+        ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.closePath();
     });
 }
 
@@ -160,7 +151,7 @@ function generateObstacle() {
     obstacles.push({ x, y: -size, size, speed, image: obstacleImages[imageIndex] });
 }
 
-// Mettre à jour les obstacles pour le niveau 1 et le niveau 2
+// Mettre à jour les obstacles
 function updateObstacles() {
     for (let i = obstacles.length - 1; i >= 0; i--) {
         let obstacle = obstacles[i];
@@ -208,4 +199,31 @@ function detectCollision(obj1, obj2) {
     return distance < collisionThreshold;
 }
 
-// Autres fonctions supplémentaires pour bonus, vies, etc.
+// Afficher l'écran de fin de jeu
+function displayGameOver() {
+    cancelAnimationFrame(animationFrameId);
+    clearInterval(difficultyInterval);
+    clearInterval(timerInterval);
+    clearInterval(bonusHeartInterval);
+    clearTimeout(obstacleGenerationTimeout);
+
+    canvas.style.display = "none";
+    document.getElementById("startButton").style.display = "none";
+
+    const gameOverScreen = document.getElementById("gameOverScreen");
+    const scoreDisplay = document.getElementById("scoreDisplay");
+    gameOverScreen.style.display = "block";
+    scoreDisplay.innerText = `Votre score : ${score.toFixed(1)}s`;
+
+    backgroundMusic.pause();
+    backgroundMusic.currentTime = 0;
+
+    document.getElementById("restartButton").style.display = "none";
+
+    document.getElementById("submitScoreButton").onclick = submitScore;
+
+    document.getElementById("restartButton").onclick = function() {
+        gameOverScreen.style.display = "none";
+        startGame();
+    };
+}
