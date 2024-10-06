@@ -4,6 +4,8 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 const scaleFactor = 4 / 6; 
+
+// Variables globales
 let numberOfStars = 100; 
 let difficultyLevel = 1;
 let obstacleSpeedMultiplier = 1;
@@ -18,6 +20,33 @@ venusImage.src = "venus.png";
 marsImage.src = "mars.png";
 mercuryImage.src = "mercury.png";
 
-function generateStars() { /*...*/ }
-function loadHighScores() { /*...*/ }
-// Other functions...
+// Gestion des interactions tactiles
+let touchActive = false;
+let touchX = 0;
+let touchY = 0;
+
+// Gestion des événements tactiles
+canvas.addEventListener("touchstart", handleTouchStart, false);
+canvas.addEventListener("touchmove", handleTouchMove, false);
+canvas.addEventListener("touchend", handleTouchEnd, false);
+
+function handleTouchStart(e) {
+    const touch = e.touches[0];
+    touchActive = true;
+    touchX = touch.clientX;
+    touchY = touch.clientY;
+    e.preventDefault();
+}
+
+function handleTouchMove(e) {
+    const touch = e.touches[0];
+    touchX = touch.clientX;
+    touchY = touch.clientY;
+    e.preventDefault();
+}
+
+function handleTouchEnd(e) {
+    touchActive = false;
+}
+
+// Ajouter d'autres fonctions comme generateStars, loadHighScores, etc.
