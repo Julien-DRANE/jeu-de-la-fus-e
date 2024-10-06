@@ -1,6 +1,6 @@
 
 // shared.js
-// Contient toutes les fonctions partagées et variables globales
+// Centralisation des images, sons, et variables globales
 
 // Canvas et contexte
 const canvas = document.getElementById("gameCanvas");
@@ -8,13 +8,11 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// Facteur de réduction et autres variables
+// Facteur de réduction et variables globales
 const scaleFactor = 4 / 6; // Réduction de la taille par un facteur de 4/6 (≈0,6667)
 let numberOfStars = 100; // Nombre d'étoiles pour le décor
 let difficultyLevel = 1;
 let obstacleSpeedMultiplier = 1;
-
-// Variables globales
 let initialRocket = {
     x: canvas.width / 2 - (25 * scaleFactor),
     y: canvas.height - (150 * scaleFactor),
@@ -44,41 +42,44 @@ let touchX = 0;
 let touchY = 0;
 const followSpeed = 10 * scaleFactor; // Vitesse de suivi ajustée
 
-// Charger l'image de la fusée
+// Charger toutes les images dans shared.js
 const rocketImage = new Image();
 rocketImage.src = "rocket.png";
 
-// Charger les images des obstacles
-const obstacleImages = ["unicorn.png", "koala.png", "crocodile.png"].map(src => {
+const obstacleImages = ["unicorn.png", "koala.png", "crocodile.png", "yaourt.png", "tarte.png", "soupe.png", "glace.png"].map(src => {
     const img = new Image();
     img.src = src;
     return img;
 });
 
-// Charger l'image de la planète
 const planetImage = new Image();
 planetImage.src = "planet.png";
 
-// Charger l'image de la lune
 const moonImage = new Image();
 moonImage.src = "lune.png";
 
-// Charger l'image des cœurs pour les vies
+const venusImage = new Image();
+venusImage.src = "venus.png";
+
+const marsImage = new Image();
+marsImage.src = "mars.png";
+
+const mercuryImage = new Image();
+mercuryImage.src = "mercury.png";
+
 const heartImage = new Image();
 heartImage.src = "coeur.png";
 
-// Charger le son de collision
+// Charger tous les sons dans shared.js
 const collisionSound = new Audio('collision.mp3');
-
-// Charger le son de vie supplémentaire
 const extraLifeSound = new Audio('extra.mp3');
 
-// Fonction pour dessiner la fusée
+// Dessiner la fusée
 function drawRocket() {
     ctx.drawImage(rocketImage, rocket.x, rocket.y, rocket.width, rocket.height);
 }
 
-// Déplacer la fusée avec inertie ou suivant le doigt
+// Déplacer la fusée
 function moveRocket() {
     if (!touchActive) {
         rocket.dx *= rocket.friction;
