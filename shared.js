@@ -1,6 +1,6 @@
 
 // shared.js
-// Centralisation des images, sons, et variables globales
+// Centralisation des images, sons, variables globales, et fonctions partagées
 
 // Canvas et contexte
 const canvas = document.getElementById("gameCanvas");
@@ -99,6 +99,7 @@ function moveRocket() {
     if (rocket.y < 0) rocket.y = 0;
     if (rocket.y + rocket.height > canvas.height) rocket.y = canvas.height - rocket.height;
 }
+
 // Générer des étoiles aléatoires pour le fond
 function generateStars() {
     stars = [];
@@ -127,6 +128,41 @@ function drawStars() {
     stars.forEach(star => {
         ctx.beginPath();
         ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.closePath();
+    });
+}
+
+// Générer des étoiles spécifiques pour le niveau 2
+function generateStarsLevel2() {
+    stars = [];
+    for (let i = 0; i < numberOfStars; i++) {
+        const size = (Math.random() * 3 + 1) * scaleFactor;
+        const speed = size / 2;
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        const color = Math.random() < 0.5 ? "red" : "gray"; // Étoiles rouges ou grises
+        stars.push({ x, y, size, speed, color });
+    }
+}
+
+// Mettre à jour les positions des étoiles dans le niveau 2
+function updateStarsLevel2() {
+    stars.forEach(star => {
+        star.y += star.speed;
+        if (star.y > canvas.height) {
+            star.y = 0;
+            star.x = Math.random() * canvas.width;
+        }
+    });
+}
+
+// Dessiner les étoiles dans le niveau 2
+function drawStarsLevel2() {
+    stars.forEach(star => {
+        ctx.beginPath();
+        ctx.fillStyle = star.color;
         ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
         ctx.fill();
         ctx.closePath();
