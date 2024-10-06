@@ -1,40 +1,26 @@
-
-// main.js
-let animationFrameId;
-let difficultyInterval;
-let timerInterval;
-let bonusHeartInterval;
-
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    applyControls(); 
-    moveRocket(); 
-
-    if (touchActive) {
-        updateRocketPosition(); 
-    }
-
-    updateStars(); 
-    updatePlanet(); 
-    updateMoon(); 
-    updateObstacles(); 
-    updateBonusHeart(); 
-
-    drawStars(); 
-    drawPlanet(); 
-    drawMoon(); 
-    drawObstacles(); 
-    drawBonusHeart(); 
-    drawRocket(); 
-    drawTimer(); 
-    drawLives(); 
-
+    applyControls();
+    moveRocket();
+    if (touchActive) updateRocketPosition();
+    updateStars();
+    updatePlanet();
+    updateMoon();
+    updateObstacles();
+    updateBonusHeart();
+    drawStars();
+    drawPlanet();
+    drawMoon();
+    drawObstacles();
+    drawBonusHeart();
+    drawRocket();
+    drawTimer();
+    drawLives();
     animationFrameId = requestAnimationFrame(gameLoop);
 }
 
 function startGame() {
-    loadHighScores(); 
+    loadHighScores();
     rocket = { ...initialRocket };
     obstacles = [];
     stars = [];
@@ -46,15 +32,12 @@ function startGame() {
     score = 0;
     lives = 3;
     bonusHeart = null;
-
-    generateStars(); 
+    generateStars();
     gameLoop();
     difficultyInterval = setInterval(increaseDifficulty, 20000);
     startObstacleGeneration();
     clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
-        elapsedTime += 1;
-    }, 100);
+    timerInterval = setInterval(() => { elapsedTime += 1; }, 100);
 }
 
 const startButton = document.getElementById("startButton");
