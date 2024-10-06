@@ -6,28 +6,6 @@
 const level2Music = new Audio('musique2.mp3');
 level2Music.volume = 1.0;
 
-// Charger les images des obstacles du niveau 2
-const level2ObstacleImages = [
-    "yaourt.png", // Pot de yaourt
-    "tarte.png",  // Part de tarte à la myrtille
-    "soupe.png",  // Bol de soupe aux nouilles
-    "glace.png"   // Glace vanille
-].map(src => {
-    const img = new Image();
-    img.src = src;
-    return img;
-});
-
-// Charger les images des planètes du niveau 2
-const venusImage = new Image();
-venusImage.src = "venus.png";
-
-const marsImage = new Image();
-marsImage.src = "mars.png";
-
-const mercuryImage = new Image();
-mercuryImage.src = "mercury.png";
-
 let currentPlanet = null;
 const planets = [venusImage, marsImage, mercuryImage];
 
@@ -165,7 +143,7 @@ function gameLoopLevel2() {
 // Fonction pour démarrer le niveau 2
 function startLevel2() {
     // Initialiser les variables spécifiques au niveau 2
-    rocket = { x: canvas.width / 2, y: canvas.height - 100, width: 50, height: 100, dx: 0, dy: 0 };
+    rocket = { ...initialRocket };
     generateStarsLevel2();
     gameLoopLevel2();
     level2Music.play();
