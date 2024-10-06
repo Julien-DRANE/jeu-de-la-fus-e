@@ -1,12 +1,12 @@
 // level2.js
-let elapsedTimeLevel2 = 0; // Déclaration de la variable au début du fichier
+// Logique spécifique pour le niveau 2
 
 // Charger la musique spécifique au niveau 2
 const level2Music = new Audio('musique2.mp3');
 level2Music.volume = 1.0;
 
-let currentPlanet = null;
-const planets = [venusImage, marsImage, mercuryImage];
+let currentPlanet = null; // Variable pour stocker la planète actuelle dans le niveau 2
+const planets = [venusImage, marsImage, mercuryImage]; // Liste des planètes pour le niveau 2
 
 // Générer une planète au hasard parmi celles du niveau 2
 function generatePlanetLevel2() {
@@ -83,35 +83,4 @@ function updateStarsLevel2() {
 function gameLoopLevel2() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    moveRocket();
-    updateStarsLevel2();
-    updatePlanetLevel2();
-    updateObstacles();
-
-    drawStarsLevel2();
-    drawPlanetLevel2();
-    drawObstacles();
-    drawRocket();
-
-    elapsedTimeLevel2 += 0.016; // Approximation de l'incrémentation du temps en secondes
-
-    requestAnimationFrame(gameLoopLevel2);
-}
-
-// Fonction pour démarrer le niveau 2
-function startLevel2() {
-    // Initialiser les variables spécifiques au niveau 2
-    rocket = { ...initialRocket };
-    generateStarsLevel2();
-    gameLoopLevel2();
-
-    // Lancer la musique après une interaction avec l'utilisateur
-    document.body.addEventListener("click", () => {
-        level2Music.play().catch(error => {
-            console.log("Erreur lors de la lecture de la musique :", error);
-        });
-    }, { once: true });
-}
-
-// Démarrer le niveau 2 quand le script est chargé
-startLevel2();
+   
