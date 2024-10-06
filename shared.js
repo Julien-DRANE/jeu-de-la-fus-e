@@ -232,3 +232,35 @@ function drawObstacles() {
         ctx.drawImage(obstacle.image, obstacle.x, obstacle.y, obstacle.size, obstacle.size);
     });
 }
+// shared.js
+
+// Initialisation du canvas et du contexte (assurez-vous que cette partie est déjà présente)
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+// Définir initialRocket et d'autres variables globales
+const initialRocket = {
+    x: canvas.width / 2 - (25 * scaleFactor),
+    y: canvas.height - (150 * scaleFactor),
+    width: 50 * scaleFactor,
+    height: 100 * scaleFactor,
+    dx: 0,
+    dy: 0,
+    acceleration: 1.5 * scaleFactor,
+    maxSpeed: 15 * scaleFactor,
+    friction: 0.93
+};
+
+// Initialiser la variable rocket avec la position initiale
+let rocket = { ...initialRocket };
+
+// Autres variables globales que vous souhaitez partager
+let obstacles = [];
+let stars = [];
+let planet = null;
+let moon = null;
+let currentPlanet = null;
+let elapsedTimeLevel1 = 0;  // Temps spécifique au niveau 1
+let elapsedTimeLevel2 = 0;  // Temps spécifique au niveau 2
