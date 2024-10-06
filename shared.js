@@ -142,6 +142,11 @@ function moveRocket() {
     if (rocket.y + rocket.height > canvas.height) rocket.y = canvas.height - rocket.height;
 }
 
+// Dessiner la fusée
+function drawRocket() {
+    ctx.drawImage(rocketImage, rocket.x, rocket.y, rocket.width, rocket.height);
+}
+
 // Générer des obstacles
 function generateObstacle() {
     const size = (Math.random() * 50 + 30) * scaleFactor;
@@ -197,6 +202,19 @@ function detectCollision(obj1, obj2) {
 
     const collisionThreshold = (obj1.width / 2) + (obj2.size / 2) + (30 * scaleFactor);
     return distance < collisionThreshold;
+}
+
+// Charger les meilleurs scores depuis le localStorage
+function loadHighScores() {
+    const storedScores = localStorage.getItem('highScores');
+    if (storedScores) {
+        highScores = JSON.parse(storedScores);
+    }
+}
+
+// Enregistrer les meilleurs scores dans le localStorage
+function saveHighScores() {
+    localStorage.setItem('highScores', JSON.stringify(highScores));
 }
 
 // Afficher l'écran de fin de jeu
