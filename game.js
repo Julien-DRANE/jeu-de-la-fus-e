@@ -1,5 +1,3 @@
-// game.js
-
 // Sélectionne le canvas et initialise le contexte
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -81,6 +79,9 @@ let touchX = 0;
 let touchY = 0;
 const followSpeed = 10 * scaleFactor; // Vitesse de suivi ajustée
 
+// AudioContext global
+let audioContext;
+
 // Charger les images et vérifier le chargement
 let imagesLoaded = 0;
 const totalImages = obstacleImages.length + planetImages.length + 2; // Inclure la fusée et les cœurs
@@ -122,14 +123,14 @@ function generateStars() {
     }
 }
 
-// Initialiser AudioContext
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-// Connecter l'AudioContext à l'élément audio
-let source = null;
-
-// Fonction pour démarrer l'AudioContext
+// Démarrer l'AudioContext pour activer le son
 function activateAudioContext() {
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const source = audioContext.createMediaElementSource(backgroundMusic);
+        source.connect(audioContext.destination);
+    }
+
     if (audioContext.state === 'suspended') {
         audioContext.resume().then(() => console.log('AudioContext activé'));
     }
@@ -195,6 +196,7 @@ function resetGameVariables() {
     difficultyLevel = 1;
     obstacleSpeedMultiplier = 1;
     elapsedTime = 0;
+    showScore = false;
     score = 0;
     lives = 3;
     bonusHeart = null;
@@ -362,34 +364,48 @@ function drawStars() {
     });
 }
 
-// Générer la planète
+// Fonction pour générer une planète
 function generatePlanet() {
+    const img = planetImages[Math.floor(Math.random() * planetImages.length)];
     const width = 400 * scaleFactor;
     const height = 400 * scaleFactor;
     const x = Math.random() * (canvas.width - width);
     planet = {
+        image: img,
         x: x,
         y: -800 * scaleFactor,
         width: width,
         height: height,
-        speed: 0.5 * scaleFactor,
-        image: planetImages[Math.floor(Math.random() * planetImages.length)]
+        speed: 0.5 * scaleFactor
     };
 }
 
-// Générer la lune
+// Fonction pour générer une lune
 function generateMoon() {
+    const img = planetImages[Math.floor(Math.random() * planetImages.length)];
     const width = 800 * scaleFactor;
     const height = 800 * scaleFactor;
     const x = Math.random() * (canvas.width - width);
     moon = {
+        image: img,
         x: x,
         y: -1600 * scaleFactor,
         width: width,
         height: height,
-        speed: 0.2 * scaleFactor,
-        image: planetImages[Math.floor(Math.random() * planetImages.length)]
+        speed: 0.2 * scaleFactor
     };
+}
+
+// Mettre à jour les positions des étoiles
+function updateStars() {
+    stars.forEach(star => {
+        star.y += star.speed;
+        if (star.y > canvas.height) {
+            star.y = 0;
+            star.x = Math.random() * canvas.width;
+            star.color = Math.random() < 0.3 ? "red" : "gray";
+        }
+    });
 }
 
 // Mettre à jour la position de la planète
@@ -400,7 +416,7 @@ function updatePlanet() {
             planet = null;
         }
     } else {
-        if (Math.random() < 0.002) { // Probabilité de génération
+        if (Math.random() < 0.002) {
             generatePlanet();
         }
     }
@@ -414,7 +430,7 @@ function updateMoon() {
             moon = null;
         }
     } else {
-        if (Math.random() < 0.001) { // Probabilité de génération
+        if (Math.random() < 0.001) {
             generateMoon();
         }
     }
@@ -613,6 +629,37 @@ function increaseDifficulty() {
     startObstacleGeneration();
 }
 
+// Mettre à jour les obstacles et gérer les collisions
+function updateObstacles() {
+    for (let i = obstacles.length - 1; i >= 0; i--) {
+        let obstacle = obstacles[i];
+        obstacle.y += obstacle.speed;
+
+        if (obstacle.oscillate) {
+            // Mouvement ondulant
+            obstacle.x += Math.sin(obstacle.y * obstacle.oscillateFrequency + obstacle.oscillateOffset) * scaleFactor;
+        }
+
+        if (obstacle.y > canvas.height) {
+            obstacles.splice(i, 1);
+            continue;
+        }
+        if (detectCollision(rocket, obstacle)) {
+            obstacles.splice(i, 1);
+            lives -= 1;
+
+            collisionSound.currentTime = 0;
+            collisionSound.play();
+
+            if (lives <= 0) {
+                score = elapsedTime / 10;
+                displayGameOver();
+                break;
+            }
+        }
+    }
+}
+
 // Fonction pour changer les assets et la musique pour le Level 2
 function switchToLevel2() {
     showLevelMessage('LEVEL 2');
@@ -641,16 +688,28 @@ function switchToLevel2() {
         return img;
     });
 
-    // Optionnel : Mettre à jour le décor immédiatement si nécessaire
-    // Par exemple, générer une nouvelle planète ou lune
-}
+    // Recharger les images pour s'assurer qu'elles sont prêtes
+    imagesLoaded = 0;
+    const newTotalImages = obstacleImages.length + planetImages.length;
+    obstacleImages.forEach(img => {
+        img.onload = () => {
+            imagesLoaded++;
+            if (imagesLoaded === newTotalImages) {
+                console.log('Nouvelles images Level 2 chargées');
+            }
+        };
+        img.onerror = () => alert(`Erreur de chargement de l'image : ${img.src}`);
+    });
 
-// Fonction pour passer au Level 2
-function checkLevelTransition() {
-    if (currentLevel === 1 && (elapsedTime / 10) >= 140) {
-        currentLevel = 2;
-        switchToLevel2();
-    }
+    planetImages.forEach(img => {
+        img.onload = () => {
+            imagesLoaded++;
+            if (imagesLoaded === newTotalImages) {
+                console.log('Nouvelles images Level 2 chargées');
+            }
+        };
+        img.onerror = () => alert(`Erreur de chargement de l'image : ${img.src}`);
+    });
 }
 
 // Fonction pour démarrer ou réinitialiser le jeu
@@ -674,15 +733,15 @@ function startGame() {
         elapsedTime += 1;
 
         // Passer au Level 2 après 140 secondes
-        checkLevelTransition();
+        if (elapsedTime / 10 >= 140 && currentLevel === 1) {
+            currentLevel = 2;
+            switchToLevel2();
+        }
     }, 100);
 
     clearInterval(bonusHeartInterval);
     bonusHeartInterval = setInterval(generateBonusHeart, 40000);
 }
-
-// Charger les meilleurs scores lorsque le script se charge
-loadHighScores();
 
 // Ajouter les événements pour le bouton de démarrage
 const startButton = document.getElementById("startButton");
@@ -695,3 +754,6 @@ startButton.addEventListener("touchstart", function(e) {
     e.preventDefault();
     startGame();
 }, { passive: false });
+
+// Charger les meilleurs scores lorsque le script se charge
+loadHighScores();
