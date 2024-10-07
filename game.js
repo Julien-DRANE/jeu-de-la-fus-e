@@ -29,6 +29,7 @@ let decorItems = []; // Liste des éléments de décor
 let currentDecorIndex = 0; // Index pour les décorations ordonnées
 let currentLevel = 1; // Niveau actuel du jeu
 const numberOfStars = 100;
+let score = 0; // Déclaration correcte de 'score'
 
 // Charger les images des obstacles pour Level 1
 let level1ObstacleImages = ["crocodile.png", "koala.png", "unicorn.png"].map(src => {
@@ -602,12 +603,16 @@ function gameLoop() {
 
 // Augmenter la difficulté progressivement
 function increaseDifficulty() {
-    difficultyLevel += 1;
-    obstacleSpeedMultiplier += 0.2;
+    if (currentLevel === 2) { // Appliquer uniquement au Niveau 2
+        difficultyLevel += 1;
+        obstacleSpeedMultiplier += 0.2;
 
-    obstacleSpawnInterval = Math.max(300, obstacleSpawnInterval - 100);
+        obstacleSpawnInterval = Math.max(300, obstacleSpawnInterval - 100);
 
-    startObstacleGeneration();
+        console.log(`Difficulté augmentée au Niveau 2 - Niveau de difficulté: ${difficultyLevel}, Multiplicateur de vitesse: ${obstacleSpeedMultiplier}, Intervalle de spawn: ${obstacleSpawnInterval}ms`);
+
+        startObstacleGeneration();
+    }
 }
 
 // Mettre à jour les obstacles et gérer les collisions
@@ -747,6 +752,12 @@ function switchToLevel2() {
 
 // Fonction pour démarrer ou réinitialiser le jeu
 function startGame() {
+    // Réinitialiser les intervalles pour éviter les duplications
+    clearInterval(difficultyInterval);
+    clearInterval(timerInterval);
+    clearInterval(bonusHeartInterval);
+    clearTimeout(obstacleGenerationTimeout);
+
     loadHighScores();
     resetGameVariables();
     generateStars(); // Génère des étoiles blanches par défaut
@@ -758,7 +769,7 @@ function startGame() {
     startBackgroundMusic();
 
     gameLoop();
-    difficultyInterval = setInterval(increaseDifficulty, 20000);
+    difficultyInterval = setInterval(increaseDifficulty, 20000); // Augmenter la difficulté toutes les 20 secondes
     startObstacleGeneration();
 
     // Générer le premier décor du Level 1 après un délai
