@@ -263,7 +263,7 @@ function resetGameVariables() {
     currentLevel = 1; // Réinitialiser le niveau au début
     difficultyLevel = 1;
     obstacleSpeedMultiplier = 1;
-    obstacleSpawnInterval = 1000; // Valeur initiale de 1000 ms
+    obstacleSpawnInterval = 400; // Valeur initiale de 1000 ms
     elapsedTime = 0;
     score = 0;
     lives = 3;
@@ -621,7 +621,7 @@ function gameLoop() {
 function increaseDifficulty() {
     if (currentLevel === 1 || currentLevel === 2) {
         // Définir les facteurs de difficulté
-        const level1DifficultyFactor = 0.18; // 90% de 0.2 pour Level 1
+        const level1DifficultyFactor = 0.8; // 90% de 0.2 pour Level 1
         const level2DifficultyFactor = 0.2;
         const difficultyFactor = currentLevel === 1 ? level1DifficultyFactor : level2DifficultyFactor;
 
@@ -630,7 +630,7 @@ function increaseDifficulty() {
 
         // Ajustement de l'intervalle de spawn en fonction du niveau
         if (currentLevel === 1) {
-            obstacleSpawnInterval = Math.max(500, obstacleSpawnInterval - 100); // Diminuer l'intervalle à minimum 500 ms
+            obstacleSpawnInterval = Math.max(100, obstacleSpawnInterval - 100); // Diminuer l'intervalle à minimum 500 ms
         } else if (currentLevel === 2) {
             obstacleSpawnInterval = Math.max(100, obstacleSpawnInterval - 50); // Diminuer l'intervalle à minimum 100 ms
         }
