@@ -329,51 +329,55 @@ function submitScore() {
     }
 }
 
-// Fonction pour générer des obstacles
-let obstacleSpawnInterval = 1000;
+// Variables pour la génération des obstacles
+let obstacleSpawnInterval = 1000; // Initialement 1000 ms
 let obstacleGenerationTimeout;
 
+// Fonction pour générer plusieurs obstacles
+function generateObstacles(count = 1) {
+    for (let i = 0; i < count; i++) {
+        const size = (Math.random() * 50 + 30) * scaleFactor;
+        const x = Math.random() * (canvas.width - size);
+        let speed = (Math.random() * 3 + 2) * obstacleSpeedMultiplier * scaleFactor;
+        let imageIndex = 0;
+        let image = null;
+
+        if (currentLevel === 1) {
+            imageIndex = Math.floor(Math.random() * level1ObstacleImages.length);
+            image = level1ObstacleImages[imageIndex];
+        } else if (currentLevel === 2) {
+            imageIndex = Math.floor(Math.random() * level2ObstacleImages.length);
+            image = level2ObstacleImages[imageIndex];
+        }
+
+        // Si l'obstacle est 'glace.png' et Level 2, ajouter une trajectoire ondulante
+        if (currentLevel === 2 && image.src.includes('glace.png')) {
+            obstacles.push({
+                x: x,
+                y: -size,
+                size: size,
+                speed: speed,
+                image: image,
+                oscillate: true,
+                oscillateAmplitude: 50 * scaleFactor,
+                oscillateFrequency: 0.05,
+                oscillateOffset: Math.random() * Math.PI * 2
+            });
+        } else {
+            obstacles.push({ x, y: -size, size, speed, image });
+        }
+    }
+}
+
+// Fonction pour démarrer la génération des obstacles avec possibilité de multiples spawn
 function startObstacleGeneration() {
     clearTimeout(obstacleGenerationTimeout);
 
-    // Générer un obstacle
-    generateObstacle();
+    // Générer plusieurs obstacles à chaque spawn pour augmenter la densité
+    generateObstacles(2); // Génère 2 obstacles à chaque appel
 
     // Planifier la prochaine génération
     obstacleGenerationTimeout = setTimeout(startObstacleGeneration, obstacleSpawnInterval);
-}
-
-function generateObstacle() {
-    const size = (Math.random() * 50 + 30) * scaleFactor;
-    const x = Math.random() * (canvas.width - size);
-    let speed = (Math.random() * 3 + 2) * obstacleSpeedMultiplier * scaleFactor;
-    let imageIndex = 0;
-    let image = null;
-
-    if (currentLevel === 1) {
-        imageIndex = Math.floor(Math.random() * level1ObstacleImages.length);
-        image = level1ObstacleImages[imageIndex];
-    } else if (currentLevel === 2) {
-        imageIndex = Math.floor(Math.random() * level2ObstacleImages.length);
-        image = level2ObstacleImages[imageIndex];
-    }
-
-    // Si l'obstacle est 'glace.png' et Level 2, ajouter une trajectoire ondulante
-    if (currentLevel === 2 && image.src.includes('glace.png')) {
-        obstacles.push({
-            x: x,
-            y: -size,
-            size: size,
-            speed: speed,
-            image: image,
-            oscillate: true,
-            oscillateAmplitude: 50 * scaleFactor,
-            oscillateFrequency: 0.05,
-            oscillateOffset: Math.random() * Math.PI * 2
-        });
-    } else {
-        obstacles.push({ x, y: -size, size, speed, image });
-    }
 }
 
 // Déplacer la fusée avec inertie ou suivant le doigt
@@ -616,15 +620,19 @@ function gameLoop() {
 // Fonction pour augmenter la difficulté
 function increaseDifficulty() {
     if (currentLevel === 1 || currentLevel === 2) {
-        const difficultyFactor = currentLevel === 1 ? 0.18 : 0.2; // 90% de 0.2 pour Level 1
+        // Définir les facteurs de difficulté
+        const level1DifficultyFactor = 0.18; // 90% de 0.2 pour Level 1
+        const level2DifficultyFactor = 0.2;
+        const difficultyFactor = currentLevel === 1 ? level1DifficultyFactor : level2DifficultyFactor;
+
         difficultyLevel += 1;
         obstacleSpeedMultiplier += difficultyFactor;
 
         // Ajustement de l'intervalle de spawn en fonction du niveau
         if (currentLevel === 1) {
-            obstacleSpawnInterval = Math.max(900, obstacleSpawnInterval - 100); // Diminuer moins rapidement
+            obstacleSpawnInterval = Math.max(500, obstacleSpawnInterval - 100); // Diminuer l'intervalle à minimum 500 ms
         } else if (currentLevel === 2) {
-            obstacleSpawnInterval = Math.max(300, obstacleSpawnInterval - 100);
+            obstacleSpawnInterval = Math.max(100, obstacleSpawnInterval - 50); // Diminuer l'intervalle à minimum 100 ms
         }
 
         console.log(`Difficulté augmentée au Niveau ${currentLevel} - Niveau de difficulté: ${difficultyLevel}, Multiplicateur de vitesse: ${obstacleSpeedMultiplier.toFixed(2)}, Intervalle de spawn: ${obstacleSpawnInterval}ms`);
@@ -715,6 +723,7 @@ function generateDecorItems() {
     } else {
         // Toutes les décorations ont été générées pour ce niveau
         decorGenerationActive = false;
+        console.log(`Toutes les décorations pour le Niveau ${currentLevel} ont été générées.`);
     }
 }
 
@@ -786,10 +795,10 @@ function triggerExtremeDifficulty() {
     if (currentLevel !== 2) return; // Assurer que cela ne s'applique qu'au Level 2
 
     // Augmenter le taux de génération des obstacles
-    obstacleSpawnInterval = 300; // Générer un obstacle toutes les 300 ms
+    obstacleSpawnInterval = 100; // Générer un obstacle toutes les 100 ms
 
     // Augmenter le multiplicateur de vitesse, mais le limiter pour éviter l'injouabilité
-    obstacleSpeedMultiplier = Math.min(obstacleSpeedMultiplier + 1, 2); // Cap à 2x
+    obstacleSpeedMultiplier = Math.min(obstacleSpeedMultiplier + 1, 3); // Cap à 3x
 
     console.log('Difficulté extrême déclenchée dans le Level 2');
 
