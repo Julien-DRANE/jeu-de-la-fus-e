@@ -137,6 +137,10 @@ let touchX = 0;
 let touchY = 0;
 const followSpeed = 10 * scaleFactor; // Vitesse de suivi ajustée
 
+// Variables pour la gestion du Level 2
+let level2StartTime = 0;
+let extremeDifficultyTriggered = false;
+
 // Initialiser AudioContext après interaction utilisateur
 let audioContext = null;
 
@@ -261,6 +265,8 @@ function resetGameVariables() {
     score = 0;
     lives = 3;
     bonusHeart = null;
+    level2StartTime = 0;
+    extremeDifficultyTriggered = false;
 }
 
 // Cacher les éléments de l'interface utilisateur avant le démarrage du jeu
@@ -286,7 +292,9 @@ function displayGameOver() {
     gameOverScreen.style.display = "block";
     scoreDisplay.innerText = `Votre score : ${score.toFixed(1)}s`;
 
+    // Réinitialiser la musique à 'musique1.mp3' lors du redémarrage
     backgroundMusic.pause();
+    backgroundMusic.src = 'musique1.mp3';
     backgroundMusic.currentTime = 0;
 
     document.getElementById("restartButton").style.display = "none";
@@ -601,7 +609,7 @@ function gameLoop() {
     animationFrameId = requestAnimationFrame(gameLoop);
 }
 
-// Augmenter la difficulté progressivement
+// Augmenter la difficulté progressivement (seulement Level 2)
 function increaseDifficulty() {
     if (currentLevel === 2) { // Appliquer uniquement au Niveau 2
         difficultyLevel += 1;
@@ -658,7 +666,12 @@ function updateStars() {
 }
 
 // Fonction pour générer les éléments de décor en ordre
+let decorGenerationActive = false; // Nouvelle variable pour contrôler les générateurs de décor
+
 function generateDecorItems() {
+    if (decorGenerationActive) return; // Empêcher les générateurs multiples
+    decorGenerationActive = true;
+
     let decorSequence = [];
     let decorImages = [];
 
@@ -682,6 +695,13 @@ function generateDecorItems() {
             speed: decor.speed
         });
         currentDecorIndex++;
+
+        // Ajouter un délai avant de générer le prochain décor
+        const delay = Math.random() * 2000 + 1000; // entre 1 et 3 secondes
+        setTimeout(() => {
+            decorGenerationActive = false;
+            generateDecorItems();
+        }, delay);
     }
 }
 
@@ -695,13 +715,6 @@ function updateDecorItems() {
             decorItems.splice(i, 1);
             continue;
         }
-    }
-
-    // Générer le prochain décor si aucun élément de décor n'est présent
-    if (decorItems.length === 0 && currentDecorIndex < (currentLevel === 1 ? level1DecorSequence.length : level2DecorSequence.length)) {
-        // Ajouter un délai variable entre 1 et 3 secondes pour espacer les décorations
-        const delay = Math.random() * 2000 + 1000; // entre 1 et 3 secondes
-        setTimeout(generateDecorItems, delay);
     }
 }
 
@@ -747,7 +760,25 @@ function switchToLevel2() {
     startObstacleGeneration();
 
     // Générer le premier décor du Level 2 après un délai
-    setTimeout(generateDecorItems, 1000); // 1 seconde de délai
+    generateDecorItems();
+
+    // Initialiser la progression du Level 2
+    level2StartTime = elapsedTime;
+    extremeDifficultyTriggered = false;
+}
+
+// Fonction pour déclencher une difficulté extrême à la fin des 2 minutes du Level 2
+function triggerExtremeDifficulty() {
+    // Augmenter le taux de génération des obstacles
+    obstacleSpawnInterval = 300; // Générer un obstacle toutes les 300 ms
+
+    // Augmenter le multiplicateur de vitesse, mais le limiter pour éviter l'injouabilité
+    obstacleSpeedMultiplier = Math.min(obstacleSpeedMultiplier + 1, 2); // Cap à 2x
+
+    console.log('Difficulté extrême déclenchée dans le Level 2');
+
+    // Redémarrer la génération des obstacles avec les nouvelles valeurs
+    startObstacleGeneration();
 }
 
 // Fonction pour démarrer ou réinitialiser le jeu
@@ -765,6 +796,10 @@ function startGame() {
 
     showLevelMessage('LEVEL 1');
 
+    // Réinitialiser la musique à 'musique1.mp3' lors du redémarrage
+    backgroundMusic.src = 'musique1.mp3';
+    backgroundMusic.currentTime = 0;
+
     // Démarrer la musique de fond après l'interaction utilisateur
     startBackgroundMusic();
 
@@ -773,17 +808,26 @@ function startGame() {
     startObstacleGeneration();
 
     // Générer le premier décor du Level 1 après un délai
-    setTimeout(generateDecorItems, 1000); // 1 seconde de délai
+    generateDecorItems();
 
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
         elapsedTime += 1;
         checkLevelTransition();
-    }, 100);
+
+        // Gestion de la progression du Level 2
+        if (currentLevel === 2 && !extremeDifficultyTriggered && (elapsedTime - level2StartTime) >= 1200) { // 1200 dixièmes de seconde = 120 secondes
+            triggerExtremeDifficulty();
+            extremeDifficultyTriggered = true;
+        }
+    }, 100); // Incrémenter elapsedTime toutes les 100 ms
 
     clearInterval(bonusHeartInterval);
     bonusHeartInterval = setInterval(generateBonusHeart, 40000);
 }
+
+// Fonction pour déclencher une difficulté extrême à la fin des 2 minutes du Level 2
+// (Déjà définie ci-dessus)
 
 // Fonction pour démarrer la musique de fond avec gestion correcte de l'AudioContext
 function startBackgroundMusic() {
