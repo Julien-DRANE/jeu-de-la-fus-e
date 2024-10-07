@@ -374,7 +374,7 @@ function startObstacleGeneration() {
     clearTimeout(obstacleGenerationTimeout);
 
     // Générer plusieurs obstacles à chaque spawn pour augmenter la densité
-    generateObstacles(2); // Génère 2 obstacles à chaque appel
+    generateObstacles(1); // Génère 2 obstacles à chaque appel
 
     // Planifier la prochaine génération
     obstacleGenerationTimeout = setTimeout(startObstacleGeneration, obstacleSpawnInterval);
@@ -837,7 +837,7 @@ function startGame() {
 
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
-        elapsedTime += 1; // Incrémenter elapsedTime toutes les 100 ms
+        elapsedTime += 100; // Incrémenter elapsedTime toutes les 100 ms
         checkLevelTransition();
 
         // Gestion de la progression du Level 2
