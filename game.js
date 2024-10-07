@@ -263,7 +263,7 @@ function resetGameVariables() {
     currentLevel = 1; // Réinitialiser le niveau au début
     difficultyLevel = 1;
     obstacleSpeedMultiplier = 1;
-    obstacleSpawnInterval = 400; // Valeur initiale de 1000 ms
+    obstacleSpawnInterval = 800; // Valeur initiale de 1000 ms
     elapsedTime = 0;
     score = 0;
     lives = 3;
