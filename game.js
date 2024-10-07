@@ -374,7 +374,7 @@ function startObstacleGeneration() {
     clearTimeout(obstacleGenerationTimeout);
 
     // Générer plusieurs obstacles à chaque spawn pour augmenter la densité
-    generateObstacles(1); // Génère 2 obstacles à chaque appel
+    generateObstacles(1); // Génère 1 obstacle à chaque appel
 
     // Planifier la prochaine génération
     obstacleGenerationTimeout = setTimeout(startObstacleGeneration, obstacleSpawnInterval);
@@ -798,7 +798,7 @@ function triggerExtremeDifficulty() {
     obstacleSpawnInterval = 900; // Générer un obstacle toutes les 100 ms
 
     // Augmenter le multiplicateur de vitesse, mais le limiter pour éviter l'injouabilité
-    obstacleSpeedMultiplier = Math.min(obstacleSpeedMultiplier + 1, 2); // Cap à 3x
+    obstacleSpeedMultiplier = Math.min(obstacleSpeedMultiplier + 1, 3); // Cap à 3x
 
     console.log('Difficulté extrême déclenchée dans le Level 2');
 
@@ -841,7 +841,7 @@ function startGame() {
         checkLevelTransition();
 
         // Gestion de la progression du Level 2
-        if (currentLevel === 2 && !extremeDifficultyTriggered && (elapsedTime - level2StartTime) >= 1100) { // 1200 dixièmes de seconde = 120 secondes
+        if (currentLevel === 2 && !extremeDifficultyTriggered && (elapsedTime - level2StartTime) >= 1200) { // 1200 dixièmes de seconde = 120 secondes
             triggerExtremeDifficulty();
             extremeDifficultyTriggered = true;
         }
