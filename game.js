@@ -120,7 +120,12 @@ function generateStars() {
     }
 }
 
-// Démarrer l'AudioContext pour activer le son
+// Créer et activer l'AudioContext
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+const source = audioContext.createMediaElementSource(backgroundMusic);
+source.connect(audioContext.destination);
+
+// Fonction pour démarrer l'AudioContext après une interaction utilisateur
 function activateAudioContext() {
     if (audioContext.state === 'suspended') {
         audioContext.resume().then(() => console.log('AudioContext activé'));
@@ -187,10 +192,10 @@ function resetGameVariables() {
     difficultyLevel = 1;
     obstacleSpeedMultiplier = 1;
     elapsedTime = 0;
-    showScore = false;
     score = 0;
     lives = 3;
     bonusHeart = null;
+    currentLevel = 1;
 }
 
 // Cacher les éléments de l'interface utilisateur avant le démarrage du jeu
@@ -252,9 +257,6 @@ function submitScore() {
         alert('Veuillez entrer votre nom.');
     }
 }
-
-// Fonction pour afficher les meilleurs scores
-// (Déjà incluse plus haut)
 
 // Fonction pour générer des obstacles
 let obstacleSpawnInterval = 1000;
@@ -358,6 +360,42 @@ function drawStars() {
     });
 }
 
+// Générer la planète ou la lune (décor)
+function generateDecor() {
+    // Choisir aléatoirement une planète
+    const decorImage = planetImages[Math.floor(Math.random() * planetImages.length)];
+    const width = decorImage.width || 100 * scaleFactor; // Ajuster selon l'image
+    const height = decorImage.height || 100 * scaleFactor; // Ajuster selon l'image
+    const x = Math.random() * (canvas.width - width);
+    const y = -height;
+    const speed = 0.5 * scaleFactor;
+
+    planet = {
+        image: decorImage,
+        x: x,
+        y: y,
+        width: width,
+        height: height,
+        speed: speed
+    };
+}
+
+// Mettre à jour la position de la planète
+function updatePlanet() {
+    if (planet) {
+        planet.y += planet.speed;
+        if (planet.y > canvas.height) {
+            planet = null;
+        }
+    } else {
+        // Déterminer la fréquence de génération selon le niveau
+        let generationChance = currentLevel === 1 ? 0.002 : 0.003;
+        if (Math.random() < generationChance) {
+            generateDecor();
+        }
+    }
+}
+
 // Dessiner la planète
 function drawPlanet() {
     if (planet) {
@@ -365,10 +403,37 @@ function drawPlanet() {
     }
 }
 
-// Dessiner la lune
-function drawMoon() {
-    if (moon) {
-        ctx.drawImage(moon.image, moon.x, moon.y, moon.width, moon.height);
+// Fonction pour générer des obstacles
+// Déjà incluse plus haut
+
+// Mettre à jour les obstacles et gérer les collisions
+function updateObstacles() {
+    for (let i = obstacles.length - 1; i >= 0; i--) {
+        let obstacle = obstacles[i];
+        obstacle.y += obstacle.speed;
+
+        if (obstacle.oscillate) {
+            // Mouvement ondulant
+            obstacle.x += Math.sin(obstacle.y * obstacle.oscillateFrequency + obstacle.oscillateOffset) * scaleFactor;
+        }
+
+        if (obstacle.y > canvas.height) {
+            obstacles.splice(i, 1);
+            continue;
+        }
+        if (detectCollision(rocket, obstacle)) {
+            obstacles.splice(i, 1);
+            lives -= 1;
+
+            collisionSound.currentTime = 0;
+            collisionSound.play();
+
+            if (lives <= 0) {
+                score = elapsedTime / 10;
+                displayGameOver();
+                break;
+            }
+        }
     }
 }
 
@@ -551,44 +616,33 @@ function increaseDifficulty() {
     startObstacleGeneration();
 }
 
-// Fonction pour charger les meilleurs scores depuis le localStorage
-// (Déjà incluse plus haut)
+// Fonction pour changer les assets et la musique pour le Level 2
+function switchToLevel2() {
+    showLevelMessage('LEVEL 2');
 
-// Fonction pour sauvegarder les meilleurs scores dans le localStorage
-// (Déjà incluse plus haut)
+    // Changer la musique de fond
+    backgroundMusic.pause();
+    backgroundMusic.src = 'musique2.mp3';
+    backgroundMusic.currentTime = 0;
+    backgroundMusic.play().then(() => {
+        console.log('Musique de fond Level 2 lue avec succès');
+    }).catch(error => {
+        console.error('Erreur de lecture de la musique de fond Level 2 :', error);
+    });
 
-// Fonction pour afficher les meilleurs scores
-// (Déjà incluse plus haut)
+    // Charger les nouvelles images pour les obstacles
+    obstacleImages = ["yaourt.png", "soupe.png", "bol.png", "glace.png"].map(src => {
+        const img = new Image();
+        img.src = src;
+        return img;
+    });
 
-// Mettre à jour les obstacles et gérer les collisions
-function updateObstacles() {
-    for (let i = obstacles.length - 1; i >= 0; i--) {
-        let obstacle = obstacles[i];
-        obstacle.y += obstacle.speed;
-
-        if (obstacle.oscillate) {
-            // Mouvement ondulant
-            obstacle.x += Math.sin(obstacle.y * obstacle.oscillateFrequency + obstacle.oscillateOffset) * scaleFactor;
-        }
-
-        if (obstacle.y > canvas.height) {
-            obstacles.splice(i, 1);
-            continue;
-        }
-        if (detectCollision(rocket, obstacle)) {
-            obstacles.splice(i, 1);
-            lives -= 1;
-
-            collisionSound.currentTime = 0;
-            collisionSound.play();
-
-            if (lives <= 0) {
-                score = elapsedTime / 10;
-                displayGameOver();
-                break;
-            }
-        }
-    }
+    // Charger les nouvelles images pour le décor
+    planetImages = ["mars.png", "mercury.png", "venus.png"].map(src => {
+        const img = new Image();
+        img.src = src;
+        return img;
+    });
 }
 
 // Fonction pour démarrer ou réinitialiser le jeu
@@ -622,51 +676,8 @@ function startGame() {
     bonusHeartInterval = setInterval(generateBonusHeart, 40000);
 }
 
-// Fonction pour changer les assets et la musique pour le Level 2
-function switchToLevel2() {
-    showLevelMessage('LEVEL 2');
-
-    // Changer la musique de fond
-    backgroundMusic.pause();
-    backgroundMusic.src = 'musique2.mp3';
-    backgroundMusic.currentTime = 0;
-    backgroundMusic.play().then(() => {
-        console.log('Musique de fond Level 2 lue avec succès');
-    }).catch(error => {
-        console.error('Erreur de lecture de la musique de fond Level 2 :', error);
-    });
-
-    // Charger les nouvelles images pour les obstacles
-    obstacleImages = ["yaourt.png", "soupe.png", "bol.png", "glace.png"].map(src => {
-        const img = new Image();
-        img.src = src;
-        return img;
-    });
-
-    // Charger les nouvelles images pour le décor
-    planetImages = ["mars.png", "mercury.png", "venus.png"].map(src => {
-        const img = new Image();
-        img.src = src;
-        return img;
-    });
-
-    // Mettre à jour les obstacles et le décor dans le jeu
-    // Aucun besoin immédiat car les nouvelles images seront utilisées lors de la génération d'obstacles et de planètes
-}
-
-// Fonction pour charger les meilleurs scores (déjà incluse)
-
-// Fonction pour sauvegarder les meilleurs scores (déjà incluse)
-
-// Fonction pour afficher les meilleurs scores (déjà incluse)
-
-// Fonction pour afficher l'écran de fin de jeu (déjà incluse)
-
-// Fonction pour soumettre le score du joueur (déjà incluse)
-
-// Fonction pour afficher les meilleurs scores (déjà incluse)
-
-// Fonction pour afficher un message de niveau (déjà incluse)
+// Appeler loadHighScores lorsque le script se charge
+loadHighScores();
 
 // Ajouter les événements pour le bouton de démarrage
 const startButton = document.getElementById("startButton");
@@ -679,6 +690,3 @@ startButton.addEventListener("touchstart", function(e) {
     e.preventDefault();
     startGame();
 }, { passive: false });
-
-// Charger les meilleurs scores lorsque le script se charge
-loadHighScores();
