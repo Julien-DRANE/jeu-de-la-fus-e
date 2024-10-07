@@ -1,3 +1,5 @@
+// game.js
+
 // Sélectionne le canvas et initialise le contexte
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -120,12 +122,13 @@ function generateStars() {
     }
 }
 
-// Démarrer l'AudioContext pour activer le son
+// Initialiser AudioContext
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-const source = audioContext.createMediaElementSource(backgroundMusic);
-source.connect(audioContext.destination);
 
-// Fonction pour activer l'AudioContext après une interaction utilisateur
+// Connecter l'AudioContext à l'élément audio
+let source = null;
+
+// Fonction pour démarrer l'AudioContext
 function activateAudioContext() {
     if (audioContext.state === 'suspended') {
         audioContext.resume().then(() => console.log('AudioContext activé'));
@@ -359,14 +362,72 @@ function drawStars() {
     });
 }
 
-// Dessiner la planète ou les planètes
+// Générer la planète
+function generatePlanet() {
+    const width = 400 * scaleFactor;
+    const height = 400 * scaleFactor;
+    const x = Math.random() * (canvas.width - width);
+    planet = {
+        x: x,
+        y: -800 * scaleFactor,
+        width: width,
+        height: height,
+        speed: 0.5 * scaleFactor,
+        image: planetImages[Math.floor(Math.random() * planetImages.length)]
+    };
+}
+
+// Générer la lune
+function generateMoon() {
+    const width = 800 * scaleFactor;
+    const height = 800 * scaleFactor;
+    const x = Math.random() * (canvas.width - width);
+    moon = {
+        x: x,
+        y: -1600 * scaleFactor,
+        width: width,
+        height: height,
+        speed: 0.2 * scaleFactor,
+        image: planetImages[Math.floor(Math.random() * planetImages.length)]
+    };
+}
+
+// Mettre à jour la position de la planète
+function updatePlanet() {
+    if (planet) {
+        planet.y += planet.speed;
+        if (planet.y > canvas.height) {
+            planet = null;
+        }
+    } else {
+        if (Math.random() < 0.002) { // Probabilité de génération
+            generatePlanet();
+        }
+    }
+}
+
+// Mettre à jour la position de la lune
+function updateMoon() {
+    if (moon) {
+        moon.y += moon.speed;
+        if (moon.y > canvas.height) {
+            moon = null;
+        }
+    } else {
+        if (Math.random() < 0.001) { // Probabilité de génération
+            generateMoon();
+        }
+    }
+}
+
+// Dessiner la planète
 function drawPlanet() {
     if (planet) {
         ctx.drawImage(planet.image, planet.x, planet.y, planet.width, planet.height);
     }
 }
 
-// Dessiner la lune ou autres objets du décor
+// Dessiner la lune
 function drawMoon() {
     if (moon) {
         ctx.drawImage(moon.image, moon.x, moon.y, moon.width, moon.height);
@@ -580,23 +641,17 @@ function switchToLevel2() {
         return img;
     });
 
-    // Vous pouvez également réinitialiser les étoiles ou ajuster d'autres paramètres ici si nécessaire
+    // Optionnel : Mettre à jour le décor immédiatement si nécessaire
+    // Par exemple, générer une nouvelle planète ou lune
 }
 
-// Fonction pour charger les meilleurs scores lorsque le script se charge
-loadHighScores();
-
-// Ajouter les événements pour le bouton de démarrage
-const startButton = document.getElementById("startButton");
-
-startButton.addEventListener("click", function() {
-    startGame();
-});
-
-startButton.addEventListener("touchstart", function(e) {
-    e.preventDefault();
-    startGame();
-}, { passive: false });
+// Fonction pour passer au Level 2
+function checkLevelTransition() {
+    if (currentLevel === 1 && (elapsedTime / 10) >= 140) {
+        currentLevel = 2;
+        switchToLevel2();
+    }
+}
 
 // Fonction pour démarrer ou réinitialiser le jeu
 function startGame() {
@@ -619,12 +674,24 @@ function startGame() {
         elapsedTime += 1;
 
         // Passer au Level 2 après 140 secondes
-        if (elapsedTime / 10 >= 140 && currentLevel === 1) {
-            currentLevel = 2;
-            switchToLevel2();
-        }
+        checkLevelTransition();
     }, 100);
 
     clearInterval(bonusHeartInterval);
     bonusHeartInterval = setInterval(generateBonusHeart, 40000);
 }
+
+// Charger les meilleurs scores lorsque le script se charge
+loadHighScores();
+
+// Ajouter les événements pour le bouton de démarrage
+const startButton = document.getElementById("startButton");
+
+startButton.addEventListener("click", function() {
+    startGame();
+});
+
+startButton.addEventListener("touchstart", function(e) {
+    e.preventDefault();
+    startGame();
+}, { passive: false });
