@@ -137,10 +137,6 @@ let touchX = 0;
 let touchY = 0;
 const followSpeed = 10 * scaleFactor; // Vitesse de suivi ajustée
 
-// Variables pour la gestion du Level 2
-let level2StartTime = 0;
-let extremeDifficultyTriggered = false;
-
 // Initialiser AudioContext après interaction utilisateur
 let audioContext = null;
 
@@ -265,8 +261,6 @@ function resetGameVariables() {
     score = 0;
     lives = 3;
     bonusHeart = null;
-    level2StartTime = 0;
-    extremeDifficultyTriggered = false;
 }
 
 // Cacher les éléments de l'interface utilisateur avant le démarrage du jeu
@@ -292,9 +286,7 @@ function displayGameOver() {
     gameOverScreen.style.display = "block";
     scoreDisplay.innerText = `Votre score : ${score.toFixed(1)}s`;
 
-    // Réinitialiser la musique à 'musique1.mp3' lors du redémarrage
     backgroundMusic.pause();
-    backgroundMusic.src = 'musique1.mp3';
     backgroundMusic.currentTime = 0;
 
     document.getElementById("restartButton").style.display = "none";
@@ -609,17 +601,15 @@ function gameLoop() {
     animationFrameId = requestAnimationFrame(gameLoop);
 }
 
-// Augmenter la difficulté progressivement (seulement Level 2)
+// Augmenter la difficulté progressivement
 function increaseDifficulty() {
-    if (currentLevel === 2) {
+    if (currentLevel === 2) { // Appliquer uniquement au Niveau 2
         difficultyLevel += 1;
         obstacleSpeedMultiplier += 0.2;
 
         obstacleSpawnInterval = Math.max(300, obstacleSpawnInterval - 100);
 
-        console.log(`Difficulty increased to Level ${difficultyLevel}: 
-            Speed Multiplier: ${obstacleSpeedMultiplier}, 
-            Spawn Interval: ${obstacleSpawnInterval}ms`);
+        console.log(`Difficulté augmentée au Niveau 2 - Niveau de difficulté: ${difficultyLevel}, Multiplicateur de vitesse: ${obstacleSpeedMultiplier}, Intervalle de spawn: ${obstacleSpawnInterval}ms`);
 
         startObstacleGeneration();
     }
@@ -758,23 +748,22 @@ function switchToLevel2() {
 
     // Générer le premier décor du Level 2 après un délai
     setTimeout(generateDecorItems, 1000); // 1 seconde de délai
-
-    // Initialiser la progression du Level 2
-    level2StartTime = elapsedTime;
-    extremeDifficultyTriggered = false;
 }
 
 // Fonction pour démarrer ou réinitialiser le jeu
 function startGame() {
+    // Réinitialiser les intervalles pour éviter les duplications
+    clearInterval(difficultyInterval);
+    clearInterval(timerInterval);
+    clearInterval(bonusHeartInterval);
+    clearTimeout(obstacleGenerationTimeout);
+
     loadHighScores();
     resetGameVariables();
     generateStars(); // Génère des étoiles blanches par défaut
     hideUIElements();
 
     showLevelMessage('LEVEL 1');
-
-    // Réinitialiser la musique à 'musique1.mp3' lors du redémarrage
-    backgroundMusic.src = 'musique1.mp3';
 
     // Démarrer la musique de fond après l'interaction utilisateur
     startBackgroundMusic();
@@ -790,30 +779,10 @@ function startGame() {
     timerInterval = setInterval(() => {
         elapsedTime += 1;
         checkLevelTransition();
-
-        // Gestion de la progression du Level 2
-        if (currentLevel === 2 && !extremeDifficultyTriggered && (elapsedTime - level2StartTime) >= 1200) { // 1200 dixièmes de seconde = 120 secondes
-            triggerExtremeDifficulty();
-            extremeDifficultyTriggered = true;
-        }
-    }, 100); // Incrementer elapsedTime toutes les 100 ms
+    }, 100);
 
     clearInterval(bonusHeartInterval);
     bonusHeartInterval = setInterval(generateBonusHeart, 40000);
-}
-
-// Fonction pour déclencher une difficulté extrême à la fin des 2 minutes du Level 2
-function triggerExtremeDifficulty() {
-    // Augmenter le taux de génération des obstacles
-    obstacleSpawnInterval = 300; // Par exemple, générer un obstacle toutes les 300 ms
-
-    // Augmenter le multiplicateur de vitesse, mais le limiter pour éviter l'injouabilité
-    obstacleSpeedMultiplier = Math.min(obstacleSpeedMultiplier + 1, 2); // Cap à 2x
-
-    console.log('Difficulté extrême déclenchée dans le Level 2');
-
-    // Redémarrer la génération des obstacles avec les nouvelles valeurs
-    startObstacleGeneration();
 }
 
 // Fonction pour démarrer la musique de fond avec gestion correcte de l'AudioContext
