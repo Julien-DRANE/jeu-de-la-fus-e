@@ -118,18 +118,37 @@
             margin: 5px 0;
             font-size: 18px;
         }
+        /* Styles pour le message de niveau */
+        #levelMessage {
+            display: none;
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px 40px;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 32px;
+            z-index: 3;
+        }
     </style>
 </head>
 <body>
     <!-- Fond de la page avant le jeu -->
     <div id="menuBackground"></div>
 
+    <!-- Musique de fond -->
     <audio id="backgroundMusic" loop>
-        <source src="soft-music.mp3" type="audio/mpeg">
-        <source src="soft-music.ogg" type="audio/ogg">
+        <source src="musique1.mp3" type="audio/mpeg">
+        <!-- Source OGG supprimée selon votre demande -->
         Votre navigateur ne supporte pas l'élément audio.
     </audio>
+
+    <!-- Bouton de démarrage -->
     <button id="startButton">Jouer</button>
+
+    <!-- Canvas du jeu -->
     <canvas id="gameCanvas"></canvas>
 
     <!-- Écran de fin de jeu pour entrer le nom du joueur et afficher le score -->
@@ -146,6 +165,10 @@
         <ol id="highScoresList"></ol>
     </div>
 
+    <!-- Message de Niveau -->
+    <div id="levelMessage">LEVEL 1</div>
+
+    <!-- Script du jeu -->
     <script src="game.js"></script>
 </body>
 </html>
