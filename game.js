@@ -629,10 +629,10 @@ function increaseDifficulty() {
         obstacleSpeedMultiplier += difficultyFactor;
 
         // Limiter le multiplicateur de vitesse pour éviter une difficulté trop élevée
-        obstacleSpeedMultiplier = Math.min(obstacleSpeedMultiplier, 3);
+        obstacleSpeedMultiplier = Math.min(obstacleSpeedMultiplier, 2);
 
         // Augmenter le nombre d'obstacles par spawn, avec un maximum
-        obstaclesPerSpawn += 1;
+        obstaclesPerSpawn += 2;
         obstaclesPerSpawn = Math.min(obstaclesPerSpawn, maxObstaclesPerSpawn);
 
         // Ajustement de l'intervalle de spawn en fonction du niveau
