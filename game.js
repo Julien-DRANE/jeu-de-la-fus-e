@@ -30,9 +30,6 @@ let moon = null;
 let currentLevel = 1; // Niveau actuel du jeu
 const numberOfStars = 100;
 
-let score = 0;
-let lives = 3; // Nombre initial de vies
-
 // Charger les images des obstacles pour Level 1
 let level1ObstacleImages = ["yaourt.png", "soupe.png", "bol.png", "glace.png"].map(src => {
     const img = new Image();
@@ -72,6 +69,9 @@ let difficultyLevel = 1;
 let obstacleSpeedMultiplier = 1;
 let elapsedTime = 0; // En dixièmes de seconde
 let timerInterval;
+
+// Variables pour les vies
+let lives = 3; // Nombre initial de vies
 
 // Variables pour le contrôle tactile
 let touchActive = false;
@@ -205,12 +205,6 @@ function hideUIElements() {
     document.getElementById("startButton").style.display = "none";
 }
 
-// Afficher les éléments de l'interface utilisateur après le jeu
-function showUIElements() {
-    canvas.style.display = "none";
-    document.getElementById("startButton").style.display = "none";
-}
-
 // Fonction pour afficher l'écran de fin de jeu
 function displayGameOver() {
     cancelAnimationFrame(animationFrameId);
@@ -275,8 +269,8 @@ function generateObstacle() {
     const size = (Math.random() * 50 + 30) * scaleFactor;
     const x = Math.random() * (canvas.width - size);
     let speed = (Math.random() * 3 + 2) * obstacleSpeedMultiplier * scaleFactor;
-    let imageIndex = Math.floor(Math.random() * obstacleImages.length);
-    let image = obstacleImages[imageIndex];
+    let imageIndex = Math.floor(Math.random() * level1ObstacleImages.length);
+    let image = level1ObstacleImages[imageIndex];
 
     // Si l'obstacle est 'glace.png' et Level 2, ajouter une trajectoire ondulante
     if (currentLevel === 2 && image.src.includes('glace.png')) {
@@ -359,76 +353,7 @@ function drawStars() {
     });
 }
 
-// Générer les planètes
-function generatePlanet() {
-    const width = 400 * scaleFactor;
-    const height = 400 * scaleFactor;
-    const x = Math.random() * (canvas.width - width);
-    planet = {
-        image: level1PlanetImages[Math.floor(Math.random() * level1PlanetImages.length)],
-        x: x,
-        y: -800 * scaleFactor,
-        width: width,
-        height: height,
-        speed: 0.5 * scaleFactor
-    };
-}
-
-// Générer la lune
-function generateMoon() {
-    const width = 800 * scaleFactor;
-    const height = 800 * scaleFactor;
-    const x = Math.random() * (canvas.width - width);
-    moon = {
-        image: level1PlanetImages[Math.floor(Math.random() * level1PlanetImages.length)],
-        x: x,
-        y: -1600 * scaleFactor,
-        width: width,
-        height: height,
-        speed: 0.2 * scaleFactor
-    };
-}
-
-// Mettre à jour la position des étoiles
-function updateStars() {
-    stars.forEach(star => {
-        star.y += star.speed;
-        if (star.y > canvas.height) {
-            star.y = 0;
-            star.x = Math.random() * canvas.width;
-        }
-    });
-}
-
-// Mettre à jour la position de la planète
-function updatePlanet() {
-    if (planet) {
-        planet.y += planet.speed;
-        if (planet.y > canvas.height) {
-            planet = null;
-        }
-    } else {
-        if (Math.random() < 0.002) {
-            generatePlanet();
-        }
-    }
-}
-
-// Mettre à jour la position de la lune
-function updateMoon() {
-    if (moon) {
-        moon.y += moon.speed;
-        if (moon.y > canvas.height) {
-            moon = null;
-        }
-    } else {
-        if (Math.random() < 0.001) {
-            generateMoon();
-        }
-    }
-}
-
-// Dessiner la planète
+// Dessiner les planètes
 function drawPlanet() {
     if (planet) {
         ctx.drawImage(planet.image, planet.x, planet.y, planet.width, planet.height);
@@ -621,6 +546,137 @@ function increaseDifficulty() {
     startObstacleGeneration();
 }
 
+// Fonction pour charger les meilleurs scores depuis le localStorage
+// (Déjà incluse plus haut)
+
+// Fonction pour sauvegarder les meilleurs scores dans le localStorage
+// (Déjà incluse plus haut)
+
+// Fonction pour afficher les meilleurs scores
+// (Déjà incluse plus haut)
+
+// Mettre à jour les obstacles et gérer les collisions
+function updateObstacles() {
+    for (let i = obstacles.length - 1; i >= 0; i--) {
+        let obstacle = obstacles[i];
+        obstacle.y += obstacle.speed;
+
+        if (obstacle.oscillate) {
+            // Mouvement ondulant
+            obstacle.x += Math.sin(obstacle.y * obstacle.oscillateFrequency + obstacle.oscillateOffset) * scaleFactor;
+        }
+
+        if (obstacle.y > canvas.height) {
+            obstacles.splice(i, 1);
+            continue;
+        }
+        if (detectCollision(rocket, obstacle)) {
+            obstacles.splice(i, 1);
+            lives -= 1;
+
+            collisionSound.currentTime = 0;
+            collisionSound.play();
+
+            if (lives <= 0) {
+                score = elapsedTime / 10;
+                displayGameOver();
+                break;
+            }
+        }
+    }
+}
+
+// Fonction pour mettre à jour les positions des étoiles
+function updateStars() {
+    stars.forEach(star => {
+        star.y += star.speed;
+        if (star.y > canvas.height) {
+            star.y = 0;
+            star.x = Math.random() * canvas.width;
+        }
+    });
+}
+
+// Générer une planète
+function generatePlanet() {
+    const width = 400 * scaleFactor;
+    const height = 400 * scaleFactor;
+    const x = Math.random() * (canvas.width - width);
+    planet = {
+        image: level1PlanetImages[Math.floor(Math.random() * level1PlanetImages.length)],
+        x: x,
+        y: -800 * scaleFactor,
+        width: width,
+        height: height,
+        speed: 0.5 * scaleFactor
+    };
+}
+
+// Générer une lune (si nécessaire, sinon vous pouvez ignorer cette fonction)
+function generateMoon() {
+    const width = 800 * scaleFactor;
+    const height = 800 * scaleFactor;
+    const x = Math.random() * (canvas.width - width);
+    moon = {
+        image: level1PlanetImages[Math.floor(Math.random() * level1PlanetImages.length)], // Reutilisation des images de planètes
+        x: x,
+        y: -1600 * scaleFactor,
+        width: width,
+        height: height,
+        speed: 0.2 * scaleFactor
+    };
+}
+
+// Mettre à jour la position de la planète
+function updatePlanet() {
+    if (planet) {
+        planet.y += planet.speed;
+        if (planet.y > canvas.height) {
+            planet = null;
+        }
+    } else {
+        if (Math.random() < 0.002) {
+            generatePlanet();
+        }
+    }
+}
+
+// Mettre à jour la position de la lune
+function updateMoon() {
+    if (moon) {
+        moon.y += moon.speed;
+        if (moon.y > canvas.height) {
+            moon = null;
+        }
+    } else {
+        if (Math.random() < 0.001) {
+            generateMoon();
+        }
+    }
+}
+
+// Dessiner la planète
+function drawPlanet() {
+    if (planet) {
+        ctx.drawImage(planet.image, planet.x, planet.y, planet.width, planet.height);
+    }
+}
+
+// Dessiner la lune
+function drawMoon() {
+    if (moon) {
+        ctx.drawImage(moon.image, moon.x, moon.y, moon.width, moon.height);
+    }
+}
+
+// Fonction pour passer au Level 2 après 140 secondes
+function checkLevelTransition() {
+    if (elapsedTime / 10 >= 140 && currentLevel === 1) {
+        currentLevel = 2;
+        switchToLevel2();
+    }
+}
+
 // Fonction pour changer les assets et la musique pour le Level 2
 function switchToLevel2() {
     showLevelMessage('LEVEL 2');
@@ -636,29 +692,28 @@ function switchToLevel2() {
     });
 
     // Charger les nouvelles images pour les obstacles
+    level1ObstacleImages.forEach(img => {
+        img.onload = imageLoaded;
+    });
+
+    // Charger les nouvelles images pour le décor
+    level1PlanetImages.forEach(img => {
+        img.onload = imageLoaded;
+    });
+
+    // Redéfinir les obstacles pour le Level 2
     obstacleImages = ["yaourt.png", "soupe.png", "bol.png", "glace.png"].map(src => {
         const img = new Image();
         img.src = src;
         return img;
     });
 
-    // Charger les nouvelles images pour le décor
+    // Redéfinir les décors pour le Level 2
     planetImages = ["mars.png", "mercury.png", "venus.png"].map(src => {
         const img = new Image();
         img.src = src;
         return img;
     });
-
-    // Regénérer les étoiles pour une ambiance plus sombre
-    generateStars();
-}
-
-// Fonction pour passer au Level 2 après 140 secondes
-function checkLevelTransition() {
-    if (elapsedTime / 10 >= 140 && currentLevel === 1) {
-        currentLevel = 2;
-        switchToLevel2();
-    }
 }
 
 // Fonction pour démarrer ou réinitialiser le jeu
@@ -686,6 +741,9 @@ function startGame() {
     clearInterval(bonusHeartInterval);
     bonusHeartInterval = setInterval(generateBonusHeart, 40000);
 }
+
+// Fonction pour soumettre le score du joueur
+// (Déjà incluse plus haut)
 
 // Ajouter les événements pour le bouton de démarrage
 const startButton = document.getElementById("startButton");
