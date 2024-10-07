@@ -316,7 +316,7 @@ function generateObstacle() {
             speed: speed,
             image: image,
             oscillate: true,
-            oscillateAmplitude: 90 * scaleFactor,
+            oscillateAmplitude: 150 * scaleFactor,
             oscillateFrequency: 0.05,
             oscillateOffset: Math.random() * Math.PI * 2
         });
@@ -687,7 +687,7 @@ function updateMoon() {
 
 // Fonction pour passer au Level 2 après 140 secondes
 function checkLevelTransition() {
-    if (elapsedTime / 10 >= 140 && currentLevel === 1) {
+    if (elapsedTime / 10 >= 130 && currentLevel === 1) {
         currentLevel = 2;
         switchToLevel2();
     }
