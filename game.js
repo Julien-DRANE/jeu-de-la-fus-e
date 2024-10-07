@@ -260,9 +260,6 @@ function resetGameVariables() {
     score = 0;
     lives = 3;
     bonusHeart = null;
-
-    // Assurez-vous que les intervalles sont réinitialisés
-    clearInterval(difficultyInterval);
 }
 
 // Cacher les éléments de l'interface utilisateur avant le démarrage du jeu
@@ -603,17 +600,14 @@ function gameLoop() {
     animationFrameId = requestAnimationFrame(gameLoop);
 }
 
-// Augmenter la difficulté progressivement uniquement pour Level 2
+// Augmenter la difficulté progressivement
 function increaseDifficulty() {
-    if (currentLevel === 2) { // **Modification Appliquée Ici**
-        difficultyLevel += 1;
-        obstacleSpeedMultiplier += 0.2;
+    difficultyLevel += 1;
+    obstacleSpeedMultiplier += 0.2;
 
-        // Réduire l'intervalle de génération des obstacles pour augmenter le nombre d'obstacles
-        obstacleSpawnInterval = Math.max(300, obstacleSpawnInterval - 100);
+    obstacleSpawnInterval = Math.max(300, obstacleSpawnInterval - 100);
 
-        startObstacleGeneration();
-    }
+    startObstacleGeneration();
 }
 
 // Mettre à jour les obstacles et gérer les collisions
@@ -749,9 +743,6 @@ function switchToLevel2() {
 
     // Générer le premier décor du Level 2 après un délai
     setTimeout(generateDecorItems, 1000); // 1 seconde de délai
-
-    // **Démarrer l'augmentation de la difficulté toutes les 20 secondes uniquement pour Level 2**
-    difficultyInterval = setInterval(increaseDifficulty, 20000); // **Modification Appliquée Ici**
 }
 
 // Fonction pour démarrer ou réinitialiser le jeu
@@ -767,9 +758,7 @@ function startGame() {
     startBackgroundMusic();
 
     gameLoop();
-    // **Supprimer l'intervalle d'augmentation de la difficulté du Level 1**
-    // difficultyInterval = setInterval(increaseDifficulty, 20000); // **Supprimé**
-
+    difficultyInterval = setInterval(increaseDifficulty, 20000);
     startObstacleGeneration();
 
     // Générer le premier décor du Level 1 après un délai
