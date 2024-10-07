@@ -630,7 +630,7 @@ function increaseDifficulty() {
 
         // Ajustement de l'intervalle de spawn en fonction du niveau
         if (currentLevel === 1) {
-            obstacleSpawnInterval = Math.max(300, obstacleSpawnInterval - 100); // Diminuer l'intervalle à minimum 500 ms
+            obstacleSpawnInterval = Math.max(500, obstacleSpawnInterval - 100); // Diminuer l'intervalle à minimum 500 ms
         } else if (currentLevel === 2) {
             obstacleSpawnInterval = Math.max(100, obstacleSpawnInterval - 50); // Diminuer l'intervalle à minimum 100 ms
         }
@@ -715,7 +715,7 @@ function generateDecorItems() {
         console.log(`Décor ajouté au Niveau ${currentLevel}: ${decor.src}`);
 
         // Ajouter un délai avant de générer le prochain décor
-        const delay = Math.random() * 20000 + 50000; // entre 1 et 3 secondes
+        const delay = Math.random() * 20000 + 75000; // entre 1 et 3 secondes
         setTimeout(() => {
             decorGenerationActive = false;
             generateDecorItems();
@@ -742,7 +742,7 @@ function updateDecorItems() {
 
 // Fonction pour passer au Level 2 après 140 secondes
 function checkLevelTransition() {
-    if (elapsedTime / 10 >= 140 && currentLevel === 1) {
+    if (elapsedTime / 10 >= 120 && currentLevel === 1) {
         currentLevel = 2;
         switchToLevel2();
     }
@@ -845,7 +845,7 @@ function startGame() {
             triggerExtremeDifficulty();
             extremeDifficultyTriggered = true;
         }
-    }, 100); // Incrémenter elapsedTime toutes les 100 ms
+    }, 700); // Incrémenter elapsedTime toutes les 100 ms
 
     clearInterval(bonusHeartInterval);
     bonusHeartInterval = setInterval(generateBonusHeart, 40000);
