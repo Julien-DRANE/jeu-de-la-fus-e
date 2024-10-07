@@ -137,7 +137,7 @@ let touchX = 0;
 let touchY = 0;
 const followSpeed = 10 * scaleFactor; // Vitesse de suivi ajustée
 
-// Variables pour la gestion du Level 2
+// Variables pour la gestion des niveaux
 let level2StartTime = 0;
 let extremeDifficultyTriggered = false;
 
@@ -616,18 +616,18 @@ function gameLoop() {
 // Fonction pour augmenter la difficulté
 function increaseDifficulty() {
     if (currentLevel === 1 || currentLevel === 2) {
-        const difficultyFactor = currentLevel === 1 ? 0.02 : 0.2; // 10% de 0.2 pour Level 1
+        const difficultyFactor = currentLevel === 1 ? 0.18 : 0.2; // 90% de 0.2 pour Level 1
         difficultyLevel += 1;
         obstacleSpeedMultiplier += difficultyFactor;
 
-        // Pour le Level 1, diminuer l'intervalle de spawn de manière plus douce
+        // Ajustement de l'intervalle de spawn en fonction du niveau
         if (currentLevel === 1) {
             obstacleSpawnInterval = Math.max(900, obstacleSpawnInterval - 100); // Diminuer moins rapidement
         } else if (currentLevel === 2) {
             obstacleSpawnInterval = Math.max(300, obstacleSpawnInterval - 100);
         }
 
-        console.log(`Difficulté augmentée au Niveau ${currentLevel} - Niveau de difficulté: ${difficultyLevel}, Multiplicateur de vitesse: ${obstacleSpeedMultiplier}, Intervalle de spawn: ${obstacleSpawnInterval}ms`);
+        console.log(`Difficulté augmentée au Niveau ${currentLevel} - Niveau de difficulté: ${difficultyLevel}, Multiplicateur de vitesse: ${obstacleSpeedMultiplier.toFixed(2)}, Intervalle de spawn: ${obstacleSpawnInterval}ms`);
 
         startObstacleGeneration();
     }
@@ -704,12 +704,17 @@ function generateDecorItems() {
         });
         currentDecorIndex++;
 
+        console.log(`Décor ajouté au Niveau ${currentLevel}: ${decor.src}`);
+
         // Ajouter un délai avant de générer le prochain décor
         const delay = Math.random() * 2000 + 1000; // entre 1 et 3 secondes
         setTimeout(() => {
             decorGenerationActive = false;
             generateDecorItems();
         }, delay);
+    } else {
+        // Toutes les décorations ont été générées pour ce niveau
+        decorGenerationActive = false;
     }
 }
 
