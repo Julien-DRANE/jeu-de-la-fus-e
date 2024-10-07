@@ -54,8 +54,8 @@ const level1DecorSequence = [
     },
     {
         src: "planet3.png", // Nouvelle planète ajoutée
-        width: 1200 * scaleFactor, // Taille super grosse
-        height: 1200 * scaleFactor,
+        width: 900 * scaleFactor, // Taille super grosse
+        height: 900 * scaleFactor,
         speed: 0.1 * scaleFactor // Vitesse plus lente
     }
 ];
@@ -630,7 +630,7 @@ function increaseDifficulty() {
 
         // Ajustement de l'intervalle de spawn en fonction du niveau
         if (currentLevel === 1) {
-            obstacleSpawnInterval = Math.max(100, obstacleSpawnInterval - 100); // Diminuer l'intervalle à minimum 500 ms
+            obstacleSpawnInterval = Math.max(200, obstacleSpawnInterval - 100); // Diminuer l'intervalle à minimum 500 ms
         } else if (currentLevel === 2) {
             obstacleSpawnInterval = Math.max(100, obstacleSpawnInterval - 50); // Diminuer l'intervalle à minimum 100 ms
         }
@@ -798,7 +798,7 @@ function triggerExtremeDifficulty() {
     obstacleSpawnInterval = 100; // Générer un obstacle toutes les 100 ms
 
     // Augmenter le multiplicateur de vitesse, mais le limiter pour éviter l'injouabilité
-    obstacleSpeedMultiplier = Math.min(obstacleSpeedMultiplier + 1, 3); // Cap à 3x
+    obstacleSpeedMultiplier = Math.min(obstacleSpeedMultiplier + 1, 2); // Cap à 3x
 
     console.log('Difficulté extrême déclenchée dans le Level 2');
 
@@ -841,7 +841,7 @@ function startGame() {
         checkLevelTransition();
 
         // Gestion de la progression du Level 2
-        if (currentLevel === 2 && !extremeDifficultyTriggered && (elapsedTime - level2StartTime) >= 1200) { // 1200 dixièmes de seconde = 120 secondes
+        if (currentLevel === 2 && !extremeDifficultyTriggered && (elapsedTime - level2StartTime) >= 1100) { // 1200 dixièmes de seconde = 120 secondes
             triggerExtremeDifficulty();
             extremeDifficultyTriggered = true;
         }
