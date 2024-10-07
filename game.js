@@ -25,8 +25,8 @@ const initialRocket = {
 let rocket = { ...initialRocket };
 let obstacles = [];
 let stars = [];
-let planet = null;
-let moon = null;
+let decorItems = []; // Liste des éléments de décor
+let currentDecorIndex = 0; // Index pour les décorations ordonnées
 let currentLevel = 1; // Niveau actuel du jeu
 const numberOfStars = 100;
 
@@ -37,12 +37,21 @@ let level1ObstacleImages = ["crocodile.png", "koala.png", "unicorn.png"].map(src
     return img;
 });
 
-// Charger les images du décor pour Level 1
-let level1PlanetImages = ["planet.png", "lune.png"].map(src => {
-    const img = new Image();
-    img.src = src;
-    return img;
-});
+// Charger les images du décor pour Level 1 (ordonnées)
+const level1DecorSequence = [
+    {
+        src: "planet.png",
+        width: 400 * scaleFactor,
+        height: 400 * scaleFactor,
+        speed: 0.5 * scaleFactor
+    },
+    {
+        src: "lune.png",
+        width: 800 * scaleFactor,
+        height: 800 * scaleFactor,
+        speed: 0.2 * scaleFactor
+    }
+];
 
 // Charger les images des obstacles pour Level 2
 let level2ObstacleImages = ["yaourt.png", "soupe.png", "bol.png", "glace.png"].map(src => {
@@ -51,10 +60,38 @@ let level2ObstacleImages = ["yaourt.png", "soupe.png", "bol.png", "glace.png"].m
     return img;
 });
 
-// Charger les images du décor pour Level 2
-let level2PlanetImages = ["mars.png", "mercury.png", "venus.png"].map(src => {
+// Charger les images du décor pour Level 2 (ordonnées)
+const level2DecorSequence = [
+    {
+        src: "mars.png",
+        width: 400 * scaleFactor,
+        height: 400 * scaleFactor,
+        speed: 0.5 * scaleFactor
+    },
+    {
+        src: "venus.png",
+        width: 600 * scaleFactor,
+        height: 600 * scaleFactor,
+        speed: 0.3 * scaleFactor
+    },
+    {
+        src: "mercury.png",
+        width: 800 * scaleFactor,
+        height: 800 * scaleFactor,
+        speed: 0.2 * scaleFactor
+    }
+];
+
+// Charger les images du décor pour chaque niveau
+let level1DecorImages = level1DecorSequence.map(decor => {
     const img = new Image();
-    img.src = src;
+    img.src = decor.src;
+    return img;
+});
+
+let level2DecorImages = level2DecorSequence.map(decor => {
+    const img = new Image();
+    img.src = decor.src;
     return img;
 });
 
@@ -95,8 +132,9 @@ const followSpeed = 10 * scaleFactor; // Vitesse de suivi ajustée
 
 // Charger les images et vérifier le chargement
 let imagesLoaded = 0;
-const totalImages = level1ObstacleImages.length + level1PlanetImages.length + 
-                    level2ObstacleImages.length + level2PlanetImages.length + 2; // Inclure la fusée et les cœurs
+const totalImages = level1ObstacleImages.length + level1DecorImages.length +
+                    level2ObstacleImages.length + level2DecorImages.length + 
+                    2; // Inclure la fusée et les cœurs
 
 function imageLoaded() {
     imagesLoaded++;
@@ -109,22 +147,26 @@ function imageLoaded() {
 rocketImage.onload = imageLoaded;
 heartImage.onload = imageLoaded;
 
+// Charger les images des obstacles pour Level 1
 level1ObstacleImages.forEach(img => {
     img.onload = imageLoaded;
     img.onerror = () => alert(`Erreur de chargement de l'image : ${img.src}`);
 });
 
-level1PlanetImages.forEach(img => {
+// Charger les images du décor pour Level 1
+level1DecorImages.forEach(img => {
     img.onload = imageLoaded;
     img.onerror = () => alert(`Erreur de chargement de l'image : ${img.src}`);
 });
 
+// Charger les images des obstacles pour Level 2
 level2ObstacleImages.forEach(img => {
     img.onload = imageLoaded;
     img.onerror = () => alert(`Erreur de chargement de l'image : ${img.src}`);
 });
 
-level2PlanetImages.forEach(img => {
+// Charger les images du décor pour Level 2
+level2DecorImages.forEach(img => {
     img.onload = imageLoaded;
     img.onerror = () => alert(`Erreur de chargement de l'image : ${img.src}`);
 });
@@ -212,8 +254,8 @@ function resetGameVariables() {
     rocket = { ...initialRocket };
     obstacles = [];
     stars = [];
-    planet = null;
-    moon = null;
+    decorItems = []; // Réinitialiser les éléments de décor
+    currentDecorIndex = 0; // Réinitialiser l'index des décorations
     currentLevel = 1; // Réinitialiser le niveau au début
     difficultyLevel = 1;
     obstacleSpeedMultiplier = 1;
@@ -316,7 +358,7 @@ function generateObstacle() {
             speed: speed,
             image: image,
             oscillate: true,
-            oscillateAmplitude: 150 * scaleFactor,
+            oscillateAmplitude: 50 * scaleFactor,
             oscillateFrequency: 0.05,
             oscillateOffset: Math.random() * Math.PI * 2
         });
@@ -388,18 +430,17 @@ function drawStars() {
     });
 }
 
-// Dessiner les planètes
-function drawPlanet() {
-    if (planet) {
-        ctx.drawImage(planet.image, planet.x, planet.y, planet.width, planet.height);
-    }
+// Dessiner les éléments de décor
+function drawDecorItems() {
+    decorItems.forEach(decor => {
+        ctx.drawImage(decor.image, decor.x, decor.y, decor.width, decor.height);
+    });
 }
 
-// Dessiner la lune
+// Dessiner la lune (si utilisée séparément)
 function drawMoon() {
-    if (moon) {
-        ctx.drawImage(moon.image, moon.x, moon.y, moon.width, moon.height);
-    }
+    // Cette fonction n'est plus nécessaire si les décorations sont gérées dans decorItems
+    // Vous pouvez la supprimer ou la laisser vide
 }
 
 // Dessiner le compteur de temps
@@ -554,14 +595,13 @@ function gameLoop() {
     }
 
     updateStars();
-    updatePlanet();
-    updateMoon();
+    updateDecorItems();
     updateObstacles();
     updateBonusHeart();
 
     drawStars();
-    drawPlanet();
-    drawMoon();
+    drawDecorItems();
+    // drawMoon(); // Désactivé car les décorations sont gérées dans decorItems
     drawObstacles();
     drawBonusHeart();
     drawRocket();
@@ -623,71 +663,63 @@ function updateStars() {
     });
 }
 
-// Générer une planète
-function generatePlanet() {
-    const width = 400 * scaleFactor;
-    const height = 400 * scaleFactor;
-    const x = Math.random() * (canvas.width - width);
-    planet = {
-        image: currentLevel === 1 
-               ? level1PlanetImages[Math.floor(Math.random() * level1PlanetImages.length)]
-               : level2PlanetImages[Math.floor(Math.random() * level2PlanetImages.length)],
-        x: x,
-        y: -800 * scaleFactor,
-        width: width,
-        height: height,
-        speed: 0.5 * scaleFactor
-    };
-}
+// Fonction pour générer les éléments de décor en ordre
+function generateDecorItems() {
+    let decorSequence = [];
+    let decorImages = [];
+    let decorDetails = [];
 
-// Générer une lune (si nécessaire, sinon vous pouvez ignorer cette fonction)
-function generateMoon() {
-    const width = 800 * scaleFactor;
-    const height = 800 * scaleFactor;
-    const x = Math.random() * (canvas.width - width);
-    moon = {
-        image: currentLevel === 1 
-               ? level1PlanetImages[Math.floor(Math.random() * level1PlanetImages.length)]
-               : level2PlanetImages[Math.floor(Math.random() * level2PlanetImages.length)],
-        x: x,
-        y: -1600 * scaleFactor,
-        width: width,
-        height: height,
-        speed: 0.2 * scaleFactor
-    };
-}
+    if (currentLevel === 1) {
+        decorSequence = level1DecorSequence;
+        decorImages = level1DecorImages;
+    } else if (currentLevel === 2) {
+        decorSequence = level2DecorSequence;
+        decorImages = level2DecorImages;
+    }
 
-// Mettre à jour la position de la planète
-function updatePlanet() {
-    if (planet) {
-        planet.y += planet.speed;
-        if (planet.y > canvas.height) {
-            planet = null;
-        }
-    } else {
-        if (Math.random() < 0.002) {
-            generatePlanet();
-        }
+    if (currentDecorIndex < decorSequence.length) {
+        const decor = decorSequence[currentDecorIndex];
+        const image = decorImages[currentDecorIndex];
+        decorItems.push({
+            image: image,
+            x: Math.random() * (canvas.width - decor.width),
+            y: -decor.height,
+            width: decor.width,
+            height: decor.height,
+            speed: decor.speed
+        });
+        currentDecorIndex++;
     }
 }
 
-// Mettre à jour la position de la lune
-function updateMoon() {
-    if (moon) {
-        moon.y += moon.speed;
-        if (moon.y > canvas.height) {
-            moon = null;
-        }
-    } else {
-        if (Math.random() < 0.001) {
-            generateMoon();
+// Mettre à jour les éléments de décor
+function updateDecorItems() {
+    for (let i = decorItems.length - 1; i >= 0; i--) {
+        let decor = decorItems[i];
+        decor.y += decor.speed;
+
+        if (decor.y > canvas.height) {
+            decorItems.splice(i, 1);
+            continue;
         }
     }
+
+    // Générer le prochain décor si aucun élément de décor n'est présent
+    if (decorItems.length === 0 && currentDecorIndex < (currentLevel === 1 ? level1DecorSequence.length : level2DecorSequence.length)) {
+        // Ajouter un délai entre les décorations pour un effet de séquence
+        setTimeout(generateDecorItems, 1000); // 1 seconde de délai
+    }
 }
+
+// Générer une planète (désactivé car les décorations sont gérées dans decorItems)
+// function generatePlanet() { /* ... */ }
+
+// Générer une lune (désactivé car les décorations sont gérées dans decorItems)
+// function generateMoon() { /* ... */ }
 
 // Fonction pour passer au Level 2 après 140 secondes
 function checkLevelTransition() {
-    if (elapsedTime / 10 >= 130 && currentLevel === 1) {
+    if (elapsedTime / 10 >= 140 && currentLevel === 1) {
         currentLevel = 2;
         switchToLevel2();
     }
@@ -722,6 +754,13 @@ function switchToLevel2() {
     // Redémarrer la génération des obstacles avec les nouvelles valeurs
     startObstacleGeneration();
 
+    // Réinitialiser les décorations
+    decorItems = [];
+    currentDecorIndex = 0;
+
+    // Générer le premier décor du Level 2 après un délai
+    setTimeout(generateDecorItems, 1000); // 1 seconde de délai
+
     // Vous pouvez ajouter d'autres modifications spécifiques au Level 2 ici si nécessaire
 }
 
@@ -738,8 +777,11 @@ function startGame() {
     startBackgroundMusic();
 
     gameLoop();
-    difficultyInterval = setInterval(increaseDifficulty, 30000);
+    difficultyInterval = setInterval(increaseDifficulty, 20000);
     startObstacleGeneration();
+
+    // Générer le premier décor du Level 1 après un délai
+    setTimeout(generateDecorItems, 1000); // 1 seconde de délai
 
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
