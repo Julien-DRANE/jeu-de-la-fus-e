@@ -630,7 +630,7 @@ function increaseDifficulty() {
 
         // Ajustement de l'intervalle de spawn en fonction du niveau
         if (currentLevel === 1) {
-            obstacleSpawnInterval = Math.max(200, obstacleSpawnInterval - 100); // Diminuer l'intervalle à minimum 500 ms
+            obstacleSpawnInterval = Math.max(300, obstacleSpawnInterval - 100); // Diminuer l'intervalle à minimum 500 ms
         } else if (currentLevel === 2) {
             obstacleSpawnInterval = Math.max(100, obstacleSpawnInterval - 50); // Diminuer l'intervalle à minimum 100 ms
         }
@@ -795,7 +795,7 @@ function triggerExtremeDifficulty() {
     if (currentLevel !== 2) return; // Assurer que cela ne s'applique qu'au Level 2
 
     // Augmenter le taux de génération des obstacles
-    obstacleSpawnInterval = 100; // Générer un obstacle toutes les 100 ms
+    obstacleSpawnInterval = 400; // Générer un obstacle toutes les 100 ms
 
     // Augmenter le multiplicateur de vitesse, mais le limiter pour éviter l'injouabilité
     obstacleSpeedMultiplier = Math.min(obstacleSpeedMultiplier + 1, 2); // Cap à 3x
