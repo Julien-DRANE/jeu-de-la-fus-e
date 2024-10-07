@@ -141,6 +141,9 @@ const followSpeed = 10 * scaleFactor; // Vitesse de suivi ajustée
 let level2StartTime = 0;
 let extremeDifficultyTriggered = false;
 
+// Variable pour contrôler la génération de décor
+let decorGenerationActive = false;
+
 // Initialiser AudioContext après interaction utilisateur
 let audioContext = null;
 
@@ -267,6 +270,7 @@ function resetGameVariables() {
     bonusHeart = null;
     level2StartTime = 0;
     extremeDifficultyTriggered = false;
+    decorGenerationActive = false; // Réinitialiser le flag de génération de décor
 }
 
 // Cacher les éléments de l'interface utilisateur avant le démarrage du jeu
@@ -609,15 +613,21 @@ function gameLoop() {
     animationFrameId = requestAnimationFrame(gameLoop);
 }
 
-// Augmenter la difficulté progressivement (seulement Level 2)
+// Fonction pour augmenter la difficulté
 function increaseDifficulty() {
-    if (currentLevel === 2) { // Appliquer uniquement au Niveau 2
+    if (currentLevel === 1 || currentLevel === 2) {
+        const difficultyFactor = currentLevel === 1 ? 0.02 : 0.2; // 10% de 0.2 pour Level 1
         difficultyLevel += 1;
-        obstacleSpeedMultiplier += 0.2;
+        obstacleSpeedMultiplier += difficultyFactor;
 
-        obstacleSpawnInterval = Math.max(300, obstacleSpawnInterval - 100);
+        // Pour le Level 1, diminuer l'intervalle de spawn de manière plus douce
+        if (currentLevel === 1) {
+            obstacleSpawnInterval = Math.max(900, obstacleSpawnInterval - 100); // Diminuer moins rapidement
+        } else if (currentLevel === 2) {
+            obstacleSpawnInterval = Math.max(300, obstacleSpawnInterval - 100);
+        }
 
-        console.log(`Difficulté augmentée au Niveau 2 - Niveau de difficulté: ${difficultyLevel}, Multiplicateur de vitesse: ${obstacleSpeedMultiplier}, Intervalle de spawn: ${obstacleSpawnInterval}ms`);
+        console.log(`Difficulté augmentée au Niveau ${currentLevel} - Niveau de difficulté: ${difficultyLevel}, Multiplicateur de vitesse: ${obstacleSpeedMultiplier}, Intervalle de spawn: ${obstacleSpawnInterval}ms`);
 
         startObstacleGeneration();
     }
@@ -666,8 +676,6 @@ function updateStars() {
 }
 
 // Fonction pour générer les éléments de décor en ordre
-let decorGenerationActive = false; // Nouvelle variable pour contrôler les générateurs de décor
-
 function generateDecorItems() {
     if (decorGenerationActive) return; // Empêcher les générateurs multiples
     decorGenerationActive = true;
@@ -731,6 +739,7 @@ function switchToLevel2() {
     // Faire disparaître les planètes de Level 1
     decorItems = [];
     currentDecorIndex = 0;
+    decorGenerationActive = false; // Réinitialiser le flag de génération de décor
 
     showLevelMessage('LEVEL 2');
 
@@ -769,6 +778,8 @@ function switchToLevel2() {
 
 // Fonction pour déclencher une difficulté extrême à la fin des 2 minutes du Level 2
 function triggerExtremeDifficulty() {
+    if (currentLevel !== 2) return; // Assurer que cela ne s'applique qu'au Level 2
+
     // Augmenter le taux de génération des obstacles
     obstacleSpawnInterval = 300; // Générer un obstacle toutes les 300 ms
 
@@ -825,9 +836,6 @@ function startGame() {
     clearInterval(bonusHeartInterval);
     bonusHeartInterval = setInterval(generateBonusHeart, 40000);
 }
-
-// Fonction pour déclencher une difficulté extrême à la fin des 2 minutes du Level 2
-// (Déjà définie ci-dessus)
 
 // Fonction pour démarrer la musique de fond avec gestion correcte de l'AudioContext
 function startBackgroundMusic() {
