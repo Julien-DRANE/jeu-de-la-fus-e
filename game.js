@@ -30,6 +30,13 @@ let currentDecorIndex = 0; // Index pour les décorations ordonnées
 let currentLevel = 1; // Niveau actuel du jeu
 const numberOfStars = 100;
 
+// Variables de transition
+let isTransitioning = false;      // Indique si une transition est en cours
+let transitionAlpha = 0;          // Opacité de l'overlay de transition
+let transitionDirection = 1;      // Direction de la transition (1 pour fade out, -1 pour fade in)
+const transitionSpeed = 0.02;     // Vitesse de la transition (ajustable)
+let transitionNextLevel = null;   // Niveau à charger après la transition
+
 // Charger les images des obstacles pour Level 1
 let level1ObstacleImages = ["crocodile.png", "koala.png", "unicorn.png"].map(src => {
     const img = new Image();
@@ -601,6 +608,28 @@ function gameLoop() {
     drawTimer();
     drawLives();
 
+    // Gérer la transition de fondu
+    if (isTransitioning) {
+        // Mettre à jour l'opacité de l'overlay
+        transitionAlpha += transitionDirection * transitionSpeed;
+
+        if (transitionAlpha >= 1) {
+            // Fin du fade out, changer de niveau
+            if (transitionNextLevel === 2) {
+                switchToLevel2();
+            }
+            transitionDirection = -1; // Commencer le fade in
+        } else if (transitionAlpha <= 0) {
+            // Fin du fade in, terminer la transition
+            isTransitioning = false;
+            transitionNextLevel = null;
+        }
+
+        // Dessiner l'overlay de transition
+        ctx.fillStyle = `rgba(0, 0, 0, ${Math.min(Math.max(transitionAlpha, 0),1)})`;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
     animationFrameId = requestAnimationFrame(gameLoop);
 }
 
@@ -706,9 +735,8 @@ function updateDecorItems() {
 
 // Fonction pour passer au Level 2 après 140 secondes
 function checkLevelTransition() {
-    if (elapsedTime / 10 >= 140 && currentLevel === 1) {
-        currentLevel = 2;
-        switchToLevel2();
+    if (elapsedTime / 10 >= 140 && currentLevel === 1 && !isTransitioning) {
+        startTransition(2);
     }
 }
 
