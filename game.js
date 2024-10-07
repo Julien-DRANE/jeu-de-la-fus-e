@@ -130,20 +130,6 @@ let touchX = 0;
 let touchY = 0;
 const followSpeed = 10 * scaleFactor; // Vitesse de suivi ajustée
 
-// Initialiser AudioContext après interaction utilisateur
-let audioContext = null;
-
-function activateAudioContext() {
-    if (!audioContext) {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if (audioContext.state === 'suspended') {
-        return audioContext.resume();
-    } else {
-        return Promise.resolve();
-    }
-}
-
 // Charger les images et vérifier le chargement
 let imagesLoaded = 0;
 const totalImages = level1ObstacleImages.length + level1DecorImages.length +
@@ -199,6 +185,30 @@ function generateStars(colors = ["white"]) {
         const color = colors[Math.floor(Math.random() * colors.length)]; // Sélectionne une couleur aléatoire
         stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size, speed, color });
     }
+}
+
+// Initialiser AudioContext après interaction utilisateur
+let audioContext = null;
+
+function activateAudioContext() {
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioContext.state === 'suspended') {
+        audioContext.resume().then(() => console.log('AudioContext activé'));
+    }
+}
+
+// Fonction pour démarrer la musique de fond
+function startBackgroundMusic() {
+    activateAudioContext();
+    backgroundMusic.currentTime = 0;
+    backgroundMusic.play().then(() => {
+        console.log('Musique de fond lue avec succès');
+    }).catch(error => {
+        console.error('Erreur de lecture de la musique de fond :', error);
+        alert("Appuyez à nouveau sur 'Jouer' pour activer la musique.");
+    });
 }
 
 // Afficher un message de niveau
@@ -702,29 +712,10 @@ function checkLevelTransition() {
     }
 }
 
-// Fonction pour changer les assets et la musique pour le Level 2 avec effet de transition
+// Fonction pour changer les assets et la musique pour le Level 2
 function switchToLevel2() {
     showLevelMessage('LEVEL 2');
 
-    // Ajouter un effet de transition (fondu)
-    const transitionDuration = 2000; // 2 secondes
-    let opacity = 0;
-    const transitionInterval = setInterval(() => {
-        opacity += 50 / transitionDuration; // Ajustement de l'opacité
-        if (opacity >= 255) {
-            opacity = 255;
-            clearInterval(transitionInterval);
-            // Après la transition, changer la musique et les décorations
-            changeToLevel2Assets();
-        }
-        // Appliquer l'opacité sur le canvas
-        ctx.fillStyle = `rgba(0, 0, 0, ${opacity / 255})`;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-    }, 50);
-}
-
-// Fonction pour changer les assets de Level 2 après la transition
-function changeToLevel2Assets() {
     // Changer la musique de fond
     backgroundMusic.pause();
     backgroundMusic.src = 'musique2.mp3';
@@ -733,7 +724,6 @@ function changeToLevel2Assets() {
         console.log('Musique de fond Level 2 lue avec succès');
     }).catch(error => {
         console.error('Erreur de lecture de la musique de fond Level 2 :', error);
-        // Optionnel : afficher un message non intrusif dans le jeu
     });
 
     // Régénérer les étoiles avec des couleurs rouges et grises pour le LEVEL 2
@@ -786,19 +776,6 @@ function startGame() {
 
     clearInterval(bonusHeartInterval);
     bonusHeartInterval = setInterval(generateBonusHeart, 40000);
-}
-
-// Fonction pour démarrer la musique de fond avec gestion correcte de l'AudioContext
-function startBackgroundMusic() {
-    activateAudioContext().then(() => {
-        backgroundMusic.currentTime = 0;
-        return backgroundMusic.play();
-    }).then(() => {
-        console.log('Musique de fond lue avec succès');
-    }).catch(error => {
-        console.error('Erreur de lecture de la musique de fond :', error);
-        // Optionnel : afficher un message non intrusif dans le jeu
-    });
 }
 
 // Ajouter les événements pour le bouton de démarrage
