@@ -122,7 +122,7 @@ let highScores = [];
 // Variables pour la musique de fond
 const backgroundMusic = document.getElementById("backgroundMusic");
 
-// Variables pour la difficulté et le score
+// Variables pour la culté et le score
 let difficultyLevel = 1;
 let obstacleSpeedMultiplier = 1;
 let elapsedTime = 0; // En dixièmes de seconde
@@ -621,7 +621,7 @@ function gameLoop() {
 function increaseDifficulty() {
     if (currentLevel === 1 || currentLevel === 2) {
         // Définir les facteurs de difficulté
-        const level1DifficultyFactor = 0.8; // 90% de 0.2 pour Level 1
+        const level1DifficultyFactor = 0.6; // 90% de 0.2 pour Level 1
         const level2DifficultyFactor = 0.2;
         const difficultyFactor = currentLevel === 1 ? level1DifficultyFactor : level2DifficultyFactor;
 
