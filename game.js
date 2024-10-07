@@ -316,7 +316,7 @@ function generateObstacle() {
             speed: speed,
             image: image,
             oscillate: true,
-            oscillateAmplitude: 50 * scaleFactor,
+            oscillateAmplitude: 90 * scaleFactor,
             oscillateFrequency: 0.05,
             oscillateOffset: Math.random() * Math.PI * 2
         });
