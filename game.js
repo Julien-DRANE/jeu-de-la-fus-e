@@ -330,7 +330,7 @@ function submitScore() {
 }
 
 // Variables pour la génération des obstacles
-let obstacleSpawnInterval = 1000; // Initialement 1000 ms
+let obstacleSpawnInterval = 800; // Initialement 1000 ms
 let obstacleGenerationTimeout;
 
 // Fonction pour générer plusieurs obstacles
@@ -338,7 +338,7 @@ function generateObstacles(count = 1) {
     for (let i = 0; i < count; i++) {
         const size = (Math.random() * 40 + 35) * scaleFactor;
         const x = Math.random() * (canvas.width - size);
-        let speed = (Math.random() * 3 + 2) * obstacleSpeedMultiplier * scaleFactor;
+        let speed = (Math.random() * 2 + 1) * obstacleSpeedMultiplier * scaleFactor;
         let imageIndex = 0;
         let image = null;
 
@@ -630,7 +630,7 @@ function increaseDifficulty() {
 
         // Ajustement de l'intervalle de spawn en fonction du niveau
         if (currentLevel === 1) {
-            obstacleSpawnInterval = Math.max(800, obstacleSpawnInterval - 100); // Diminuer l'intervalle à minimum 500 ms
+            obstacleSpawnInterval = Math.max(500, obstacleSpawnInterval - 100); // Diminuer l'intervalle à minimum 500 ms
         } else if (currentLevel === 2) {
             obstacleSpawnInterval = Math.max(100, obstacleSpawnInterval - 50); // Diminuer l'intervalle à minimum 100 ms
         }
@@ -774,7 +774,7 @@ function switchToLevel2() {
     obstacleSpeedMultiplier = 1;
 
     // Réinitialiser l'intervalle de génération des obstacles
-    obstacleSpawnInterval = 1000; // Valeur initiale de 1000 ms
+    obstacleSpawnInterval = 800; // Valeur initiale de 1000 ms
 
     // Arrêter la génération actuelle des obstacles
     clearTimeout(obstacleGenerationTimeout);
@@ -795,7 +795,7 @@ function triggerExtremeDifficulty() {
     if (currentLevel !== 2) return; // Assurer que cela ne s'applique qu'au Level 2
 
     // Augmenter le taux de génération des obstacles
-    obstacleSpawnInterval = 900; // Générer un obstacle toutes les 100 ms
+    obstacleSpawnInterval = 700; // Générer un obstacle toutes les 100 ms
 
     // Augmenter le multiplicateur de vitesse, mais le limiter pour éviter l'injouabilité
     obstacleSpeedMultiplier = Math.min(obstacleSpeedMultiplier + 1, 3); // Cap à 3x
@@ -829,7 +829,7 @@ function startGame() {
     startBackgroundMusic();
 
     gameLoop();
-    difficultyInterval = setInterval(increaseDifficulty, 20000); // Augmenter la difficulté toutes les 20 secondes
+    difficultyInterval = setInterval(increaseDifficulty, 15000); // Augmenter la difficulté toutes les 20 secondes
     startObstacleGeneration();
 
     // Générer le premier décor du Level 1 après un délai
