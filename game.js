@@ -837,7 +837,7 @@ function startGame() {
 
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
-        elapsedTime += 100; // Incrémenter elapsedTime toutes les 100 ms
+        elapsedTime += 1; // Incrémenter elapsedTime toutes les 100 ms
         checkLevelTransition();
 
         // Gestion de la progression du Level 2
