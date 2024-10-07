@@ -740,7 +740,7 @@ function updateDecorItems() {
     }
 }
 
-// Fonction pour passer au Level 2 après 140 secondes
+// Fonction pour passer au Level 2 après 120 secondes
 function checkLevelTransition() {
     if (elapsedTime / 10 >= 120 && currentLevel === 1) {
         currentLevel = 2;
@@ -837,7 +837,7 @@ function startGame() {
 
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
-        elapsedTime += 1;
+        elapsedTime += 1; // Incrémenter elapsedTime toutes les 100 ms
         checkLevelTransition();
 
         // Gestion de la progression du Level 2
@@ -845,7 +845,7 @@ function startGame() {
             triggerExtremeDifficulty();
             extremeDifficultyTriggered = true;
         }
-    }, 700); // Incrémenter elapsedTime toutes les 100 ms
+    }, 100); // Incrémenter elapsedTime toutes les 100 ms
 
     clearInterval(bonusHeartInterval);
     bonusHeartInterval = setInterval(generateBonusHeart, 40000);
