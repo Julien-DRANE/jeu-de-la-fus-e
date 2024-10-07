@@ -30,33 +30,29 @@ let moon = null;
 let currentLevel = 1; // Niveau actuel du jeu
 const numberOfStars = 100;
 
-// Charger les images des obstacles pour Level 1 et Level 2
-const level1ObstacleSources = ["yaourt.png", "soupe.png", "bol.png", "glace.png"];
-const level2ObstacleSources = ["yaourt.png", "soupe.png", "bol.png", "glace.png"]; // Ajouter les obstacles spécifiques au Level 2 si nécessaire
-
-let level1ObstacleImages = level1ObstacleSources.map(src => {
+// Charger les images des obstacles pour Level 1
+let level1ObstacleImages = ["crocodile.png", "koala.png", "unicorn.png"].map(src => {
     const img = new Image();
     img.src = src;
     return img;
 });
 
-let level2ObstacleImages = level2ObstacleSources.map(src => {
+// Charger les images du décor pour Level 1
+let level1PlanetImages = ["planet.png", "lune.png"].map(src => {
     const img = new Image();
     img.src = src;
     return img;
 });
 
-// Charger les images du décor pour Level 1 et Level 2
-const level1PlanetSources = ["mars.png", "mercury.png", "venus.png"];
-const level2PlanetSources = ["venus.png"]; // Ajouter les planètes spécifiques au Level 2 si nécessaire
-
-let level1PlanetImages = level1PlanetSources.map(src => {
+// Charger les images des obstacles pour Level 2 (anciennement Level 1)
+let level2ObstacleImages = ["yaourt.png", "soupe.png", "bol.png", "glace.png"].map(src => {
     const img = new Image();
     img.src = src;
     return img;
 });
 
-let level2PlanetImages = level2PlanetSources.map(src => {
+// Charger les images du décor pour Level 2 (anciennement Level 1)
+let level2PlanetImages = ["mars.png", "mercury.png", "venus.png"].map(src => {
     const img = new Image();
     img.src = src;
     return img;
@@ -99,7 +95,8 @@ const followSpeed = 10 * scaleFactor; // Vitesse de suivi ajustée
 
 // Charger les images et vérifier le chargement
 let imagesLoaded = 0;
-const totalImages = level1ObstacleImages.length + level2ObstacleImages.length + level1PlanetImages.length + level2PlanetImages.length + 2; // Inclure la fusée et les cœurs
+const totalImages = level1ObstacleImages.length + level1PlanetImages.length + 
+                    level2ObstacleImages.length + level2PlanetImages.length + 2; // Inclure la fusée et les cœurs
 
 function imageLoaded() {
     imagesLoaded++;
@@ -114,22 +111,22 @@ heartImage.onload = imageLoaded;
 
 level1ObstacleImages.forEach(img => {
     img.onload = imageLoaded;
-    img.onerror = () => console.error(`Erreur de chargement de l'image : ${img.src}`);
-});
-
-level2ObstacleImages.forEach(img => {
-    img.onload = imageLoaded;
-    img.onerror = () => console.error(`Erreur de chargement de l'image : ${img.src}`);
+    img.onerror = () => alert(`Erreur de chargement de l'image : ${img.src}`);
 });
 
 level1PlanetImages.forEach(img => {
     img.onload = imageLoaded;
-    img.onerror = () => console.error(`Erreur de chargement de l'image : ${img.src}`);
+    img.onerror = () => alert(`Erreur de chargement de l'image : ${img.src}`);
+});
+
+level2ObstacleImages.forEach(img => {
+    img.onload = imageLoaded;
+    img.onerror = () => alert(`Erreur de chargement de l'image : ${img.src}`);
 });
 
 level2PlanetImages.forEach(img => {
     img.onload = imageLoaded;
-    img.onerror = () => console.error(`Erreur de chargement de l'image : ${img.src}`);
+    img.onerror = () => alert(`Erreur de chargement de l'image : ${img.src}`);
 });
 
 // Vérifier le chargement de la musique
@@ -137,13 +134,13 @@ backgroundMusic.addEventListener('error', (e) => {
     console.error('Erreur lors de la lecture de la musique :', e);
 });
 
-// Générer des étoiles avec des couleurs variées
+// Générer des étoiles toutes blanches
 function generateStars() {
     stars = [];
     for (let i = 0; i < numberOfStars; i++) {
         const size = (Math.random() * 3 + 1) * scaleFactor;
         const speed = size / 2;
-        const color = Math.random() < 0.3 ? "red" : "gray"; // 30% rouges, 70% grises
+        const color = "white"; // Toutes les étoiles sont blanches
         stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size, speed, color });
     }
 }
@@ -297,13 +294,14 @@ function generateObstacle() {
     const size = (Math.random() * 50 + 30) * scaleFactor;
     const x = Math.random() * (canvas.width - size);
     let speed = (Math.random() * 3 + 2) * obstacleSpeedMultiplier * scaleFactor;
-    let image;
+    let imageIndex = 0;
+    let image = null;
 
     if (currentLevel === 1) {
-        const imageIndex = Math.floor(Math.random() * level1ObstacleImages.length);
+        imageIndex = Math.floor(Math.random() * level1ObstacleImages.length);
         image = level1ObstacleImages[imageIndex];
     } else if (currentLevel === 2) {
-        const imageIndex = Math.floor(Math.random() * level2ObstacleImages.length);
+        imageIndex = Math.floor(Math.random() * level2ObstacleImages.length);
         image = level2ObstacleImages[imageIndex];
     }
 
@@ -629,7 +627,9 @@ function generatePlanet() {
     const height = 400 * scaleFactor;
     const x = Math.random() * (canvas.width - width);
     planet = {
-        image: currentLevel === 1 ? level1PlanetImages[Math.floor(Math.random() * level1PlanetImages.length)] : level2PlanetImages[Math.floor(Math.random() * level2PlanetImages.length)],
+        image: currentLevel === 1 
+               ? level1PlanetImages[Math.floor(Math.random() * level1PlanetImages.length)]
+               : level2PlanetImages[Math.floor(Math.random() * level2PlanetImages.length)],
         x: x,
         y: -800 * scaleFactor,
         width: width,
@@ -644,7 +644,9 @@ function generateMoon() {
     const height = 800 * scaleFactor;
     const x = Math.random() * (canvas.width - width);
     moon = {
-        image: currentLevel === 1 ? level1PlanetImages[Math.floor(Math.random() * level1PlanetImages.length)] : level2PlanetImages[Math.floor(Math.random() * level2PlanetImages.length)], // Reutilisation des images de planètes
+        image: currentLevel === 1 
+               ? level1PlanetImages[Math.floor(Math.random() * level1PlanetImages.length)]
+               : level2PlanetImages[Math.floor(Math.random() * level2PlanetImages.length)],
         x: x,
         y: -1600 * scaleFactor,
         width: width,
@@ -704,10 +706,13 @@ function switchToLevel2() {
     });
 
     // Redéfinir les obstacles pour le Level 2
-    obstacleSpeedMultiplier += 0.5; // Augmente la vitesse des obstacles
+    // Les obstacles sont déjà chargés dans level2ObstacleImages
+    // Aucune modification supplémentaire n'est nécessaire ici
 
     // Redéfinir les décors pour le Level 2
-    planetImages = level2PlanetImages;
+    // Les planètes et lunes sont déjà gérées dans generatePlanet et generateMoon
+
+    // Vous pouvez ajouter d'autres modifications spécifiques au Level 2 ici si nécessaire
 }
 
 // Fonction pour démarrer ou réinitialiser le jeu
