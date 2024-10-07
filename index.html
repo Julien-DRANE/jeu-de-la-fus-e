@@ -2,15 +2,137 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Colorful Rocket Game</title>
-    <link rel="stylesheet" href="style.css"> <!-- Votre CSS -->
+    <!-- Balise meta viewport standard -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Styles globaux */
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            height: 100%;
+        }
+        /* Fond de la page avant le jeu */
+        #menuBackground {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('menu.png') no-repeat center center;
+            background-size: cover;
+            z-index: -1;
+        }
+        /* Style du canvas */
+        canvas {
+            display: none;
+            background: #000;
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        /* Bouton de démarrage */
+        #startButton {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 40px 60px;
+            font-size: 36px;
+            cursor: pointer;
+            background-color: #ff5722;
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            z-index: 1;
+            color: #fff;
+        }
+        #startButton:hover {
+            background-color: #e64a19;
+        }
+        /* Styles pour l'écran de fin de jeu */
+        #gameOverScreen {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(30, 31, 38, 0.9);
+            padding: 30px;
+            text-align: center;
+            color: white;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 400px;
+            z-index: 2;
+        }
+        #gameOverScreen input {
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 18px;
+            width: 80%;
+            border-radius: 5px;
+            border: none;
+        }
+        #gameOverScreen button {
+            margin-top: 20px;
+            padding: 15px 30px;
+            font-size: 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 50%;
+            background-color: #4caf50;
+            color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        #gameOverScreen button:hover {
+            background-color: #43a047;
+        }
+        /* Styles pour le tableau des meilleurs scores */
+        #highScoreTable {
+            display: none;
+            position: absolute;
+            top: 10%;
+            right: 10%;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            color: #000;
+            max-width: 200px;
+            z-index: 1;
+        }
+        #highScoreTable h2 {
+            margin-top: 0;
+            text-align: center;
+        }
+        #highScoresList {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        #highScoresList li {
+            margin: 5px 0;
+            font-size: 18px;
+        }
+    </style>
 </head>
 <body>
+    <!-- Fond de la page avant le jeu -->
     <div id="menuBackground"></div>
+
+    <audio id="backgroundMusic" loop>
+        <source src="soft-music.mp3" type="audio/mpeg">
+        <source src="soft-music.ogg" type="audio/ogg">
+        Votre navigateur ne supporte pas l'élément audio.
+    </audio>
     <button id="startButton">Jouer</button>
     <canvas id="gameCanvas"></canvas>
 
+    <!-- Écran de fin de jeu pour entrer le nom du joueur et afficher le score -->
     <div id="gameOverScreen">
         <div id="scoreDisplay"></div>
         <input type="text" id="playerNameInput" placeholder="Entrez votre nom">
@@ -18,15 +140,12 @@
         <button id="restartButton" style="display: none;">Rejouer</button>
     </div>
 
+    <!-- Tableau des Meilleurs Scores -->
     <div id="highScoreTable">
         <h2>Meilleurs Scores</h2>
         <ol id="highScoresList"></ol>
     </div>
 
-    <!-- Chargement des fichiers JavaScript -->
-     <script src="shared.js"></script>  <!-- shared.js doit être chargé en premier -->
-    <script src="level1.js"></script>  <!-- Niveau 1 -->
-    <script src="level2.js"></script>  <!-- Niveau 2 -->
-    <script src="main.js"></script>    <!-- Script principal (menu, etc.) -->
+    <script src="game.js"></script>
 </body>
 </html>
