@@ -44,14 +44,14 @@ let level1PlanetImages = ["planet.png", "lune.png"].map(src => {
     return img;
 });
 
-// Charger les images des obstacles pour Level 2 (anciennement Level 1)
+// Charger les images des obstacles pour Level 2
 let level2ObstacleImages = ["yaourt.png", "soupe.png", "bol.png", "glace.png"].map(src => {
     const img = new Image();
     img.src = src;
     return img;
 });
 
-// Charger les images du décor pour Level 2 (anciennement Level 1)
+// Charger les images du décor pour Level 2
 let level2PlanetImages = ["mars.png", "mercury.png", "venus.png"].map(src => {
     const img = new Image();
     img.src = src;
@@ -134,13 +134,13 @@ backgroundMusic.addEventListener('error', (e) => {
     console.error('Erreur lors de la lecture de la musique :', e);
 });
 
-// Générer des étoiles toutes blanches
-function generateStars() {
+// Générer des étoiles avec des couleurs personnalisées
+function generateStars(colors = ["white"]) {
     stars = [];
     for (let i = 0; i < numberOfStars; i++) {
         const size = (Math.random() * 3 + 1) * scaleFactor;
         const speed = size / 2;
-        const color = "white"; // Toutes les étoiles sont blanches
+        const color = colors[Math.floor(Math.random() * colors.length)]; // Sélectionne une couleur aléatoire
         stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size, speed, color });
     }
 }
@@ -214,8 +214,10 @@ function resetGameVariables() {
     stars = [];
     planet = null;
     moon = null;
+    currentLevel = 1; // Réinitialiser le niveau au début
     difficultyLevel = 1;
     obstacleSpeedMultiplier = 1;
+    obstacleSpawnInterval = 1000; // Valeur initiale de 1000 ms
     elapsedTime = 0;
     score = 0;
     lives = 3;
@@ -705,12 +707,20 @@ function switchToLevel2() {
         console.error('Erreur de lecture de la musique de fond Level 2 :', error);
     });
 
-    // Redéfinir les obstacles pour le Level 2
-    // Les obstacles sont déjà chargés dans level2ObstacleImages
-    // Aucune modification supplémentaire n'est nécessaire ici
+    // Régénérer les étoiles avec des couleurs rouges et grises pour le LEVEL 2
+    generateStars(["red", "gray"]);
 
-    // Redéfinir les décors pour le Level 2
-    // Les planètes et lunes sont déjà gérées dans generatePlanet et generateMoon
+    // Réinitialiser le multiplicateur de vitesse des obstacles
+    obstacleSpeedMultiplier = 1;
+
+    // Réinitialiser l'intervalle de génération des obstacles
+    obstacleSpawnInterval = 1000; // Valeur initiale de 1000 ms
+
+    // Arrêter la génération actuelle des obstacles
+    clearTimeout(obstacleGenerationTimeout);
+
+    // Redémarrer la génération des obstacles avec les nouvelles valeurs
+    startObstacleGeneration();
 
     // Vous pouvez ajouter d'autres modifications spécifiques au Level 2 ici si nécessaire
 }
@@ -719,7 +729,7 @@ function switchToLevel2() {
 function startGame() {
     loadHighScores();
     resetGameVariables();
-    generateStars();
+    generateStars(); // Génère des étoiles blanches par défaut
     hideUIElements();
 
     showLevelMessage('LEVEL 1');
