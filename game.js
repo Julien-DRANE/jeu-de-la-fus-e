@@ -120,12 +120,12 @@ function generateStars() {
     }
 }
 
-// Créer et activer l'AudioContext
+// Démarrer l'AudioContext pour activer le son
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 const source = audioContext.createMediaElementSource(backgroundMusic);
 source.connect(audioContext.destination);
 
-// Fonction pour démarrer l'AudioContext après une interaction utilisateur
+// Fonction pour activer l'AudioContext après une interaction utilisateur
 function activateAudioContext() {
     if (audioContext.state === 'suspended') {
         audioContext.resume().then(() => console.log('AudioContext activé'));
@@ -195,7 +195,6 @@ function resetGameVariables() {
     score = 0;
     lives = 3;
     bonusHeart = null;
-    currentLevel = 1;
 }
 
 // Cacher les éléments de l'interface utilisateur avant le démarrage du jeu
@@ -360,80 +359,17 @@ function drawStars() {
     });
 }
 
-// Générer la planète ou la lune (décor)
-function generateDecor() {
-    // Choisir aléatoirement une planète
-    const decorImage = planetImages[Math.floor(Math.random() * planetImages.length)];
-    const width = decorImage.width || 100 * scaleFactor; // Ajuster selon l'image
-    const height = decorImage.height || 100 * scaleFactor; // Ajuster selon l'image
-    const x = Math.random() * (canvas.width - width);
-    const y = -height;
-    const speed = 0.5 * scaleFactor;
-
-    planet = {
-        image: decorImage,
-        x: x,
-        y: y,
-        width: width,
-        height: height,
-        speed: speed
-    };
-}
-
-// Mettre à jour la position de la planète
-function updatePlanet() {
-    if (planet) {
-        planet.y += planet.speed;
-        if (planet.y > canvas.height) {
-            planet = null;
-        }
-    } else {
-        // Déterminer la fréquence de génération selon le niveau
-        let generationChance = currentLevel === 1 ? 0.002 : 0.003;
-        if (Math.random() < generationChance) {
-            generateDecor();
-        }
-    }
-}
-
-// Dessiner la planète
+// Dessiner la planète ou les planètes
 function drawPlanet() {
     if (planet) {
         ctx.drawImage(planet.image, planet.x, planet.y, planet.width, planet.height);
     }
 }
 
-// Fonction pour générer des obstacles
-// Déjà incluse plus haut
-
-// Mettre à jour les obstacles et gérer les collisions
-function updateObstacles() {
-    for (let i = obstacles.length - 1; i >= 0; i--) {
-        let obstacle = obstacles[i];
-        obstacle.y += obstacle.speed;
-
-        if (obstacle.oscillate) {
-            // Mouvement ondulant
-            obstacle.x += Math.sin(obstacle.y * obstacle.oscillateFrequency + obstacle.oscillateOffset) * scaleFactor;
-        }
-
-        if (obstacle.y > canvas.height) {
-            obstacles.splice(i, 1);
-            continue;
-        }
-        if (detectCollision(rocket, obstacle)) {
-            obstacles.splice(i, 1);
-            lives -= 1;
-
-            collisionSound.currentTime = 0;
-            collisionSound.play();
-
-            if (lives <= 0) {
-                score = elapsedTime / 10;
-                displayGameOver();
-                break;
-            }
-        }
+// Dessiner la lune ou autres objets du décor
+function drawMoon() {
+    if (moon) {
+        ctx.drawImage(moon.image, moon.x, moon.y, moon.width, moon.height);
     }
 }
 
@@ -643,7 +579,24 @@ function switchToLevel2() {
         img.src = src;
         return img;
     });
+
+    // Vous pouvez également réinitialiser les étoiles ou ajuster d'autres paramètres ici si nécessaire
 }
+
+// Fonction pour charger les meilleurs scores lorsque le script se charge
+loadHighScores();
+
+// Ajouter les événements pour le bouton de démarrage
+const startButton = document.getElementById("startButton");
+
+startButton.addEventListener("click", function() {
+    startGame();
+});
+
+startButton.addEventListener("touchstart", function(e) {
+    e.preventDefault();
+    startGame();
+}, { passive: false });
 
 // Fonction pour démarrer ou réinitialiser le jeu
 function startGame() {
@@ -675,18 +628,3 @@ function startGame() {
     clearInterval(bonusHeartInterval);
     bonusHeartInterval = setInterval(generateBonusHeart, 40000);
 }
-
-// Appeler loadHighScores lorsque le script se charge
-loadHighScores();
-
-// Ajouter les événements pour le bouton de démarrage
-const startButton = document.getElementById("startButton");
-
-startButton.addEventListener("click", function() {
-    startGame();
-});
-
-startButton.addEventListener("touchstart", function(e) {
-    e.preventDefault();
-    startGame();
-}, { passive: false });
