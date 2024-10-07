@@ -336,7 +336,7 @@ let obstacleGenerationTimeout;
 // Fonction pour générer plusieurs obstacles
 function generateObstacles(count = 1) {
     for (let i = 0; i < count; i++) {
-        const size = (Math.random() * 20 + 10) * scaleFactor;
+        const size = (Math.random() * 40 + 30) * scaleFactor;
         const x = Math.random() * (canvas.width - size);
         let speed = (Math.random() * 3 + 2) * obstacleSpeedMultiplier * scaleFactor;
         let imageIndex = 0;
@@ -795,7 +795,7 @@ function triggerExtremeDifficulty() {
     if (currentLevel !== 2) return; // Assurer que cela ne s'applique qu'au Level 2
 
     // Augmenter le taux de génération des obstacles
-    obstacleSpawnInterval = 400; // Générer un obstacle toutes les 100 ms
+    obstacleSpawnInterval = 900; // Générer un obstacle toutes les 100 ms
 
     // Augmenter le multiplicateur de vitesse, mais le limiter pour éviter l'injouabilité
     obstacleSpeedMultiplier = Math.min(obstacleSpeedMultiplier + 1, 2); // Cap à 3x
