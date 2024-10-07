@@ -336,7 +336,7 @@ let obstacleGenerationTimeout;
 // Fonction pour générer plusieurs obstacles
 function generateObstacles(count = 1) {
     for (let i = 0; i < count; i++) {
-        const size = (Math.random() * 50 + 30) * scaleFactor;
+        const size = (Math.random() * 20 + 10) * scaleFactor;
         const x = Math.random() * (canvas.width - size);
         let speed = (Math.random() * 3 + 2) * obstacleSpeedMultiplier * scaleFactor;
         let imageIndex = 0;
