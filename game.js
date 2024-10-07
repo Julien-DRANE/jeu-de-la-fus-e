@@ -50,6 +50,12 @@ const level1DecorSequence = [
         width: 800 * scaleFactor,
         height: 800 * scaleFactor,
         speed: 0.2 * scaleFactor
+    },
+    {
+        src: "planet3.png", // Nouvelle planète ajoutée
+        width: 1200 * scaleFactor, // Taille super grosse
+        height: 1200 * scaleFactor,
+        speed: 0.1 * scaleFactor // Vitesse plus lente
     }
 ];
 
@@ -130,6 +136,18 @@ let touchX = 0;
 let touchY = 0;
 const followSpeed = 10 * scaleFactor; // Vitesse de suivi ajustée
 
+// Initialiser AudioContext après interaction utilisateur
+let audioContext = null;
+
+function activateAudioContext() {
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioContext.state === 'suspended') {
+        audioContext.resume().then(() => console.log('AudioContext activé'));
+    }
+}
+
 // Charger les images et vérifier le chargement
 let imagesLoaded = 0;
 const totalImages = level1ObstacleImages.length + level1DecorImages.length +
@@ -184,18 +202,6 @@ function generateStars(colors = ["white"]) {
         const speed = size / 2;
         const color = colors[Math.floor(Math.random() * colors.length)]; // Sélectionne une couleur aléatoire
         stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size, speed, color });
-    }
-}
-
-// Initialiser AudioContext après interaction utilisateur
-let audioContext = null;
-
-function activateAudioContext() {
-    if (!audioContext) {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if (audioContext.state === 'suspended') {
-        audioContext.resume().then(() => console.log('AudioContext activé'));
     }
 }
 
