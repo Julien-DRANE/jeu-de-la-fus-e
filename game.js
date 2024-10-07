@@ -144,7 +144,9 @@ function activateAudioContext() {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
     }
     if (audioContext.state === 'suspended') {
-        audioContext.resume().then(() => console.log('AudioContext activé'));
+        return audioContext.resume();
+    } else {
+        return Promise.resolve();
     }
 }
 
@@ -203,18 +205,6 @@ function generateStars(colors = ["white"]) {
         const color = colors[Math.floor(Math.random() * colors.length)]; // Sélectionne une couleur aléatoire
         stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size, speed, color });
     }
-}
-
-// Fonction pour démarrer la musique de fond
-function startBackgroundMusic() {
-    activateAudioContext();
-    backgroundMusic.currentTime = 0;
-    backgroundMusic.play().then(() => {
-        console.log('Musique de fond lue avec succès');
-    }).catch(error => {
-        console.error('Erreur de lecture de la musique de fond :', error);
-        alert("Appuyez à nouveau sur 'Jouer' pour activer la musique.");
-    });
 }
 
 // Afficher un message de niveau
@@ -720,6 +710,10 @@ function checkLevelTransition() {
 
 // Fonction pour changer les assets et la musique pour le Level 2
 function switchToLevel2() {
+    // Faire disparaître les planètes de Level 1
+    decorItems = [];
+    currentDecorIndex = 0;
+
     showLevelMessage('LEVEL 2');
 
     // Changer la musique de fond
@@ -746,10 +740,6 @@ function switchToLevel2() {
 
     // Redémarrer la génération des obstacles avec les nouvelles valeurs
     startObstacleGeneration();
-
-    // Réinitialiser les décorations
-    decorItems = [];
-    currentDecorIndex = 0;
 
     // Générer le premier décor du Level 2 après un délai
     setTimeout(generateDecorItems, 1000); // 1 seconde de délai
@@ -782,6 +772,20 @@ function startGame() {
 
     clearInterval(bonusHeartInterval);
     bonusHeartInterval = setInterval(generateBonusHeart, 40000);
+}
+
+// Fonction pour démarrer la musique de fond avec gestion correcte de l'AudioContext
+function startBackgroundMusic() {
+    activateAudioContext().then(() => {
+        backgroundMusic.currentTime = 0;
+        return backgroundMusic.play();
+    }).then(() => {
+        console.log('Musique de fond lue avec succès');
+    }).catch(error => {
+        console.error('Erreur de lecture de la musique de fond :', error);
+        // Suppression de l'alerte pour éviter de gâcher l'expérience utilisateur
+        // Optionnel : afficher un message non intrusif dans le jeu
+    });
 }
 
 // Ajouter les événements pour le bouton de démarrage
