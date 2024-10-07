@@ -30,15 +30,33 @@ let moon = null;
 let currentLevel = 1; // Niveau actuel du jeu
 const numberOfStars = 100;
 
-// Charger les images des obstacles pour Level 1
-let level1ObstacleImages = ["yaourt.png", "soupe.png", "bol.png", "glace.png"].map(src => {
+// Charger les images des obstacles pour Level 1 et Level 2
+const level1ObstacleSources = ["yaourt.png", "soupe.png", "bol.png", "glace.png"];
+const level2ObstacleSources = ["yaourt.png", "soupe.png", "bol.png", "glace.png"]; // Ajouter les obstacles spécifiques au Level 2 si nécessaire
+
+let level1ObstacleImages = level1ObstacleSources.map(src => {
     const img = new Image();
     img.src = src;
     return img;
 });
 
-// Charger les images du décor pour Level 1
-let level1PlanetImages = ["mars.png", "mercury.png", "venus.png"].map(src => {
+let level2ObstacleImages = level2ObstacleSources.map(src => {
+    const img = new Image();
+    img.src = src;
+    return img;
+});
+
+// Charger les images du décor pour Level 1 et Level 2
+const level1PlanetSources = ["mars.png", "mercury.png", "venus.png"];
+const level2PlanetSources = ["venus.png"]; // Ajouter les planètes spécifiques au Level 2 si nécessaire
+
+let level1PlanetImages = level1PlanetSources.map(src => {
+    const img = new Image();
+    img.src = src;
+    return img;
+});
+
+let level2PlanetImages = level2PlanetSources.map(src => {
     const img = new Image();
     img.src = src;
     return img;
@@ -81,7 +99,7 @@ const followSpeed = 10 * scaleFactor; // Vitesse de suivi ajustée
 
 // Charger les images et vérifier le chargement
 let imagesLoaded = 0;
-const totalImages = level1ObstacleImages.length + level1PlanetImages.length + 2; // Inclure la fusée et les cœurs
+const totalImages = level1ObstacleImages.length + level2ObstacleImages.length + level1PlanetImages.length + level2PlanetImages.length + 2; // Inclure la fusée et les cœurs
 
 function imageLoaded() {
     imagesLoaded++;
@@ -96,12 +114,22 @@ heartImage.onload = imageLoaded;
 
 level1ObstacleImages.forEach(img => {
     img.onload = imageLoaded;
-    img.onerror = () => alert(`Erreur de chargement de l'image : ${img.src}`);
+    img.onerror = () => console.error(`Erreur de chargement de l'image : ${img.src}`);
+});
+
+level2ObstacleImages.forEach(img => {
+    img.onload = imageLoaded;
+    img.onerror = () => console.error(`Erreur de chargement de l'image : ${img.src}`);
 });
 
 level1PlanetImages.forEach(img => {
     img.onload = imageLoaded;
-    img.onerror = () => alert(`Erreur de chargement de l'image : ${img.src}`);
+    img.onerror = () => console.error(`Erreur de chargement de l'image : ${img.src}`);
+});
+
+level2PlanetImages.forEach(img => {
+    img.onload = imageLoaded;
+    img.onerror = () => console.error(`Erreur de chargement de l'image : ${img.src}`);
 });
 
 // Vérifier le chargement de la musique
@@ -269,8 +297,15 @@ function generateObstacle() {
     const size = (Math.random() * 50 + 30) * scaleFactor;
     const x = Math.random() * (canvas.width - size);
     let speed = (Math.random() * 3 + 2) * obstacleSpeedMultiplier * scaleFactor;
-    let imageIndex = Math.floor(Math.random() * level1ObstacleImages.length);
-    let image = level1ObstacleImages[imageIndex];
+    let image;
+
+    if (currentLevel === 1) {
+        const imageIndex = Math.floor(Math.random() * level1ObstacleImages.length);
+        image = level1ObstacleImages[imageIndex];
+    } else if (currentLevel === 2) {
+        const imageIndex = Math.floor(Math.random() * level2ObstacleImages.length);
+        image = level2ObstacleImages[imageIndex];
+    }
 
     // Si l'obstacle est 'glace.png' et Level 2, ajouter une trajectoire ondulante
     if (currentLevel === 2 && image.src.includes('glace.png')) {
@@ -546,15 +581,6 @@ function increaseDifficulty() {
     startObstacleGeneration();
 }
 
-// Fonction pour charger les meilleurs scores depuis le localStorage
-// (Déjà incluse plus haut)
-
-// Fonction pour sauvegarder les meilleurs scores dans le localStorage
-// (Déjà incluse plus haut)
-
-// Fonction pour afficher les meilleurs scores
-// (Déjà incluse plus haut)
-
 // Mettre à jour les obstacles et gérer les collisions
 function updateObstacles() {
     for (let i = obstacles.length - 1; i >= 0; i--) {
@@ -603,7 +629,7 @@ function generatePlanet() {
     const height = 400 * scaleFactor;
     const x = Math.random() * (canvas.width - width);
     planet = {
-        image: level1PlanetImages[Math.floor(Math.random() * level1PlanetImages.length)],
+        image: currentLevel === 1 ? level1PlanetImages[Math.floor(Math.random() * level1PlanetImages.length)] : level2PlanetImages[Math.floor(Math.random() * level2PlanetImages.length)],
         x: x,
         y: -800 * scaleFactor,
         width: width,
@@ -618,7 +644,7 @@ function generateMoon() {
     const height = 800 * scaleFactor;
     const x = Math.random() * (canvas.width - width);
     moon = {
-        image: level1PlanetImages[Math.floor(Math.random() * level1PlanetImages.length)], // Reutilisation des images de planètes
+        image: currentLevel === 1 ? level1PlanetImages[Math.floor(Math.random() * level1PlanetImages.length)] : level2PlanetImages[Math.floor(Math.random() * level2PlanetImages.length)], // Reutilisation des images de planètes
         x: x,
         y: -1600 * scaleFactor,
         width: width,
@@ -655,20 +681,6 @@ function updateMoon() {
     }
 }
 
-// Dessiner la planète
-function drawPlanet() {
-    if (planet) {
-        ctx.drawImage(planet.image, planet.x, planet.y, planet.width, planet.height);
-    }
-}
-
-// Dessiner la lune
-function drawMoon() {
-    if (moon) {
-        ctx.drawImage(moon.image, moon.x, moon.y, moon.width, moon.height);
-    }
-}
-
 // Fonction pour passer au Level 2 après 140 secondes
 function checkLevelTransition() {
     if (elapsedTime / 10 >= 140 && currentLevel === 1) {
@@ -691,29 +703,11 @@ function switchToLevel2() {
         console.error('Erreur de lecture de la musique de fond Level 2 :', error);
     });
 
-    // Charger les nouvelles images pour les obstacles
-    level1ObstacleImages.forEach(img => {
-        img.onload = imageLoaded;
-    });
-
-    // Charger les nouvelles images pour le décor
-    level1PlanetImages.forEach(img => {
-        img.onload = imageLoaded;
-    });
-
     // Redéfinir les obstacles pour le Level 2
-    obstacleImages = ["yaourt.png", "soupe.png", "bol.png", "glace.png"].map(src => {
-        const img = new Image();
-        img.src = src;
-        return img;
-    });
+    obstacleSpeedMultiplier += 0.5; // Augmente la vitesse des obstacles
 
     // Redéfinir les décors pour le Level 2
-    planetImages = ["mars.png", "mercury.png", "venus.png"].map(src => {
-        const img = new Image();
-        img.src = src;
-        return img;
-    });
+    planetImages = level2PlanetImages;
 }
 
 // Fonction pour démarrer ou réinitialiser le jeu
@@ -741,9 +735,6 @@ function startGame() {
     clearInterval(bonusHeartInterval);
     bonusHeartInterval = setInterval(generateBonusHeart, 40000);
 }
-
-// Fonction pour soumettre le score du joueur
-// (Déjà incluse plus haut)
 
 // Ajouter les événements pour le bouton de démarrage
 const startButton = document.getElementById("startButton");
