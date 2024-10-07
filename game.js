@@ -738,7 +738,7 @@ function startGame() {
     startBackgroundMusic();
 
     gameLoop();
-    difficultyInterval = setInterval(increaseDifficulty, 20000);
+    difficultyInterval = setInterval(increaseDifficulty, 30000);
     startObstacleGeneration();
 
     clearInterval(timerInterval);
