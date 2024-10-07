@@ -437,12 +437,6 @@ function drawDecorItems() {
     });
 }
 
-// Dessiner la lune (si utilisée séparément)
-function drawMoon() {
-    // Cette fonction n'est plus nécessaire si les décorations sont gérées dans decorItems
-    // Vous pouvez la supprimer ou la laisser vide
-}
-
 // Dessiner le compteur de temps
 function drawTimer() {
     ctx.font = `${24 * scaleFactor}px Arial`;
@@ -601,7 +595,6 @@ function gameLoop() {
 
     drawStars();
     drawDecorItems();
-    // drawMoon(); // Désactivé car les décorations sont gérées dans decorItems
     drawObstacles();
     drawBonusHeart();
     drawRocket();
@@ -667,7 +660,6 @@ function updateStars() {
 function generateDecorItems() {
     let decorSequence = [];
     let decorImages = [];
-    let decorDetails = [];
 
     if (currentLevel === 1) {
         decorSequence = level1DecorSequence;
@@ -706,16 +698,11 @@ function updateDecorItems() {
 
     // Générer le prochain décor si aucun élément de décor n'est présent
     if (decorItems.length === 0 && currentDecorIndex < (currentLevel === 1 ? level1DecorSequence.length : level2DecorSequence.length)) {
-        // Ajouter un délai entre les décorations pour un effet de séquence
-        setTimeout(generateDecorItems, 1000); // 1 seconde de délai
+        // Ajouter un délai variable entre 1 et 3 secondes pour espacer les décorations
+        const delay = Math.random() * 2000 + 1000; // entre 1 et 3 secondes
+        setTimeout(generateDecorItems, delay);
     }
 }
-
-// Générer une planète (désactivé car les décorations sont gérées dans decorItems)
-// function generatePlanet() { /* ... */ }
-
-// Générer une lune (désactivé car les décorations sont gérées dans decorItems)
-// function generateMoon() { /* ... */ }
 
 // Fonction pour passer au Level 2 après 140 secondes
 function checkLevelTransition() {
@@ -760,8 +747,6 @@ function switchToLevel2() {
 
     // Générer le premier décor du Level 2 après un délai
     setTimeout(generateDecorItems, 1000); // 1 seconde de délai
-
-    // Vous pouvez ajouter d'autres modifications spécifiques au Level 2 ici si nécessaire
 }
 
 // Fonction pour démarrer ou réinitialiser le jeu
