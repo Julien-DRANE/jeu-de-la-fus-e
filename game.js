@@ -338,7 +338,7 @@ function generateObstacles(count = 1) {
     for (let i = 0; i < count; i++) {
         const size = (Math.random() * 40 + 35) * scaleFactor;
         const x = Math.random() * (canvas.width - size);
-        let speed = (Math.random() * 2 + 1.5) * obstacleSpeedMultiplier * scaleFactor;
+        let speed = (Math.random() * 3 + 2) * obstacleSpeedMultiplier * scaleFactor;
         let imageIndex = 0;
         let image = null;
 
@@ -621,8 +621,8 @@ function gameLoop() {
 function increaseDifficulty() {
     if (currentLevel === 1 || currentLevel === 2) {
         // Définir les facteurs de difficulté
-        const level1DifficultyFactor = 0.2; // 90% de 0.2 pour Level 1
-        const level2DifficultyFactor = 0.2;
+        const level1DifficultyFactor = 0.4; // 90% de 0.2 pour Level 1
+        const level2DifficultyFactor = 0.4;
         const difficultyFactor = currentLevel === 1 ? level1DifficultyFactor : level2DifficultyFactor;
 
         difficultyLevel += 1;
