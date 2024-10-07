@@ -18,7 +18,7 @@ const initialRocket = {
     dx: 0,
     dy: 0,
     acceleration: 1.5 * scaleFactor,
-    maxSpeed: 15 * scaleFactor,
+    maxSpeed: 18 * scaleFactor,
     friction: 0.93
 };
 
@@ -359,7 +359,7 @@ function generateObstacles(count = 1) {
                 speed: speed,
                 image: image,
                 oscillate: true,
-                oscillateAmplitude: 50 * scaleFactor,
+                oscillateAmplitude: 180 * scaleFactor,
                 oscillateFrequency: 0.05,
                 oscillateOffset: Math.random() * Math.PI * 2
             });
@@ -621,7 +621,7 @@ function gameLoop() {
 function increaseDifficulty() {
     if (currentLevel === 1 || currentLevel === 2) {
         // Définir les facteurs de difficulté
-        const level1DifficultyFactor = 0.6; // 90% de 0.2 pour Level 1
+        const level1DifficultyFactor = 0.2; // 90% de 0.2 pour Level 1
         const level2DifficultyFactor = 0.2;
         const difficultyFactor = currentLevel === 1 ? level1DifficultyFactor : level2DifficultyFactor;
 
@@ -715,7 +715,7 @@ function generateDecorItems() {
         console.log(`Décor ajouté au Niveau ${currentLevel}: ${decor.src}`);
 
         // Ajouter un délai avant de générer le prochain décor
-        const delay = Math.random() * 2000 + 1000; // entre 1 et 3 secondes
+        const delay = Math.random() * 20000 + 50000; // entre 1 et 3 secondes
         setTimeout(() => {
             decorGenerationActive = false;
             generateDecorItems();
