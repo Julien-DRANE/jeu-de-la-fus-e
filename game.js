@@ -28,57 +28,32 @@ let stars = [];
 let planet = null;
 let moon = null;
 const numberOfStars = 100;
+
+// Charger l'AudioContext pour les appareils Chrome
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 const backgroundMusic = document.getElementById("backgroundMusic");
-backgroundMusic.volume = 1.0; // S'assurer que le volume est à 100%
+const source = audioContext.createMediaElementSource(backgroundMusic);
+source.connect(audioContext.destination);
+
+// Ajuster le volume de la musique à 70 % (réduction de 30 %)
+backgroundMusic.volume = 0.7;
+
+// Variables pour la difficulté et le score
 let difficultyLevel = 1;
 let obstacleSpeedMultiplier = 1;
-
 let elapsedTime = 0; // En dixièmes de seconde
 let timerInterval;
+
+// Variables de vies
+let lives = 3; // Nombre initial de vies
 
 let showScore = false;
 let score = 0;
 
-let touchActive = false;
-let touchX = 0;
-let touchY = 0;
-const followSpeed = 10 * scaleFactor; // Vitesse de suivi ajustée
-
-// Charger l'image de la fusée
-const rocketImage = new Image();
-rocketImage.src = "rocket.png";
-
-// Charger les images des obstacles
-const obstacleImages = ["unicorn.png", "koala.png", "crocodile.png"].map(src => {
-    const img = new Image();
-    img.src = src;
-    return img;
-});
-
-// Charger l'image de la planète
-const planetImage = new Image();
-planetImage.src = "planet.png";
-
-// Charger l'image de la lune
-const moonImage = new Image();
-moonImage.src = "lune.png";
-
-// Charger l'image des cœurs pour les vies
-const heartImage = new Image();
-heartImage.src = "coeur.png";
-
-// Charger le son de collision
-const collisionSound = new Audio('collision.mp3');
-
-// Charger le son de vie supplémentaire
-const extraLifeSound = new Audio('extra.mp3');
-
-// Gérer le chargement des images
-let imagesLoaded = 0;
-const totalImages = obstacleImages.length + 4; // Inclure l'image de la fusée, la planète, la lune et les cœurs
-
-// Variables de vies
-let lives = 3; // Nombre initial de vies
+// Variables pour les messages de niveau
+let levelMessage = "";
+let showLevelMessage = false;
+let levelMessageTimer = 0;
 
 // Variables pour le cœur bonus
 let bonusHeart = null;
@@ -87,7 +62,34 @@ let bonusHeartInterval;
 // Variables pour les meilleurs scores
 let highScores = [];
 
+// Charger les images des obstacles pour Level 1 et Level 2
+const obstacleImagesLevel1 = ["yaourt.png", "soupe.png", "bol.png", "glace.png"].map(src => {
+    const img = new Image();
+    img.src = src;
+    return img;
+});
+
+// Charger les images des décorations pour Level 1 et Level 2
+const planetImagesLevel1 = ["mars.png", "mercury.png", "venus.png"].map(src => {
+    const img = new Image();
+    img.src = src;
+    return img;
+});
+const moonImage = new Image();
+moonImage.src = "lune.png"; // Vous pouvez ignorer cette image si elle n'est plus utilisée
+
+// Charger l'image des cœurs pour les vies
+const heartImage = new Image();
+heartImage.src = "coeur.png";
+
+// Charger les sons de collision et de bonus
+const collisionSound = new Audio('collision.mp3');
+const extraLifeSound = new Audio('extra.mp3');
+
 // Vérifier le chargement des images et démarrer le jeu
+let imagesLoaded = 0;
+const totalImages = obstacleImagesLevel1.length + planetImagesLevel1.length + 1; // Inclure les cœurs
+
 function imageLoaded() {
     imagesLoaded++;
     if (imagesLoaded === totalImages) {
@@ -95,35 +97,128 @@ function imageLoaded() {
     }
 }
 
-// Ajouter des gestionnaires d'événements de chargement et d'erreur pour chaque image
-rocketImage.onload = imageLoaded;
-planetImage.onload = imageLoaded;
-moonImage.onload = imageLoaded;
-heartImage.onload = imageLoaded;
-rocketImage.onerror = planetImage.onerror = moonImage.onerror = heartImage.onerror = function () {
-    console.error("Erreur de chargement de l'image.");
-    alert("Erreur de chargement de l'image.");
-};
-
-obstacleImages.forEach(img => {
+// Associer des événements de chargement et d'erreur aux images
+planetImagesLevel1.forEach(img => {
     img.onload = imageLoaded;
-    img.onerror = function () {
-        console.error(`Erreur de chargement de l'image : ${img.src}`);
-        alert(`Erreur de chargement de l'image : ${img.src}`);
-    };
+    img.onerror = () => alert(`Erreur de chargement de l'image : ${img.src}`);
 });
 
-// Générer des étoiles aléatoires
+moonImage.onload = imageLoaded;
+moonImage.onerror = () => alert(`Erreur de chargement de l'image : ${moonImage.src}`);
+
+heartImage.onload = imageLoaded;
+heartImage.onerror = () => alert(`Erreur de chargement de l'image : ${heartImage.src}`);
+
+obstacleImagesLevel1.forEach(img => {
+    img.onload = imageLoaded;
+    img.onerror = () => alert(`Erreur de chargement de l'image : ${img.src}`);
+});
+
+// Vérifier le chargement de la musique
+backgroundMusic.addEventListener('error', (e) => {
+    console.error('Erreur lors de la lecture de la musique :', e);
+});
+
+// Générer des étoiles avec des couleurs variées pour une atmosphère sombre
 function generateStars() {
     stars = [];
     for (let i = 0; i < numberOfStars; i++) {
         const size = (Math.random() * 3 + 1) * scaleFactor;
         const speed = size / 2;
-        const x = Math.random() * canvas.width;
-        const y = Math.random() * canvas.height;
-        stars.push({ x, y, size, speed });
+        const color = Math.random() < 0.3 ? "rgba(255, 0, 0, 0.8)" : "rgba(128, 128, 128, 0.8)"; // 30% rouges, 70% grises
+        stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size, speed, color });
     }
 }
+
+// Démarrer l'AudioContext pour activer le son
+function activateAudioContext() {
+    if (audioContext.state === 'suspended') {
+        audioContext.resume().then(() => console.log('AudioContext activé'));
+    }
+}
+
+// Démarrer la musique de fond
+function startBackgroundMusic(musicSrc) {
+    activateAudioContext();
+    backgroundMusic.src = musicSrc;
+    backgroundMusic.currentTime = 0;
+    backgroundMusic.play().then(() => {
+        console.log('Musique de fond lue avec succès');
+    }).catch(error => {
+        console.error('Erreur de lecture de la musique de fond :', error);
+        alert("Appuyez à nouveau sur 'Jouer' pour activer la musique.");
+    });
+}
+
+// Afficher un message de niveau
+function showLevel(level) {
+    levelMessage = `LEVEL ${level}`;
+    showLevelMessage = true;
+    levelMessageTimer = 180; // Afficher le message pendant 3 secondes (60 FPS)
+}
+
+// Lancer le jeu avec la musique de fond appropriée
+function startGame() {
+    loadHighScores();
+    resetGameVariables();
+    generateStars();
+    hideUIElements();
+
+    // Déterminer le niveau initial
+    difficultyLevel = 1;
+    showLevel(1);
+    startBackgroundMusic('musique1.mp3'); // Musique pour Level 1
+
+    gameLoop();
+    difficultyInterval = setInterval(increaseDifficulty, 20000);
+    startObstacleGeneration();
+
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        elapsedTime += 1;
+        if (difficultyLevel === 1 && elapsedTime >= 1400) { // 1400 dixièmes de seconde = 140 secondes
+            switchToLevel2();
+        }
+    }, 100);
+
+    clearInterval(bonusHeartInterval);
+    bonusHeartInterval = setInterval(generateBonusHeart, 40000);
+}
+
+// Réinitialiser les variables du jeu pour une nouvelle partie
+function resetGameVariables() {
+    rocket = { ...initialRocket };
+    obstacles = [];
+    stars = [];
+    planet = null;
+    moon = null;
+    obstacleSpeedMultiplier = 1;
+    elapsedTime = 0;
+    showScore = false;
+    score = 0;
+    lives = 3;
+    bonusHeart = null;
+}
+
+// Cacher les éléments de l'interface utilisateur avant le démarrage du jeu
+function hideUIElements() {
+    document.getElementById("gameOverScreen").style.display = "none";
+    document.getElementById("highScoreTable").style.display = "none";
+    canvas.style.display = "block";
+    document.getElementById("startButton").style.display = "none";
+}
+
+// Ajouter les événements pour le bouton de démarrage
+const startButton = document.getElementById("startButton");
+
+startButton.addEventListener("click", function() {
+    startGame();
+});
+
+startButton.addEventListener("touchstart", function(e) {
+    e.preventDefault();
+    startGame();
+}, { passive: false });
 
 // Générer la planète (décor)
 function generatePlanet() {
@@ -139,7 +234,7 @@ function generatePlanet() {
     };
 }
 
-// Générer la lune (décor)
+// Générer la lune (décor) pour Level 1
 function generateMoon() {
     const width = 800 * scaleFactor;
     const height = 800 * scaleFactor;
@@ -160,6 +255,7 @@ function updateStars() {
         if (star.y > canvas.height) {
             star.y = 0;
             star.x = Math.random() * canvas.width;
+            star.color = Math.random() < 0.3 ? "rgba(255, 0, 0, 0.8)" : "rgba(128, 128, 128, 0.8)";
         }
     });
 }
@@ -178,7 +274,7 @@ function updatePlanet() {
     }
 }
 
-// Mettre à jour la position de la lune
+// Mettre à jour la position de la lune pour Level 1
 function updateMoon() {
     if (moon) {
         moon.y += moon.speed;
@@ -192,11 +288,11 @@ function updateMoon() {
     }
 }
 
-// Dessiner les étoiles avec des vitesses et tailles différentes
+// Dessiner les étoiles avec des couleurs variées
 function drawStars() {
     stars.forEach(star => {
         ctx.beginPath();
-        ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+        ctx.fillStyle = star.color;
         ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
         ctx.fill();
         ctx.closePath();
@@ -206,11 +302,13 @@ function drawStars() {
 // Dessiner la planète
 function drawPlanet() {
     if (planet) {
-        ctx.drawImage(planetImage, planet.x, planet.y, planet.width, planet.height);
+        // Choisir une planète aléatoire parmi les images chargées
+        const img = planetImagesLevel1[Math.floor(Math.random() * planetImagesLevel1.length)];
+        ctx.drawImage(img, planet.x, planet.y, planet.width, planet.height);
     }
 }
 
-// Dessiner la lune
+// Dessiner la lune pour Level 1
 function drawMoon() {
     if (moon) {
         ctx.drawImage(moonImage, moon.x, moon.y, moon.width, moon.height);
@@ -232,11 +330,33 @@ function startObstacleGeneration() {
 }
 
 function generateObstacle() {
-    const size = (Math.random() * 50 + 30) * scaleFactor;
-    const x = Math.random() * (canvas.width - size);
-    const speed = (Math.random() * 3 + 2) * obstacleSpeedMultiplier * scaleFactor;
-    const imageIndex = Math.floor(Math.random() * obstacleImages.length);
-    obstacles.push({ x, y: -size, size, speed, image: obstacleImages[imageIndex] });
+    if (difficultyLevel === 1) {
+        const size = (Math.random() * 50 + 30) * scaleFactor;
+        const x = Math.random() * (canvas.width - size);
+        const speed = (Math.random() * 3 + 2) * obstacleSpeedMultiplier * scaleFactor;
+        const imageIndex = Math.floor(Math.random() * obstacleImagesLevel1.length);
+        obstacles.push({ x, y: -size, size, speed, image: obstacleImagesLevel1[imageIndex], level: 1 });
+    } else if (difficultyLevel === 2) {
+        // Level 2 obstacles
+        const size = (Math.random() * 50 + 30) * scaleFactor;
+        const x = Math.random() * (canvas.width - size);
+        const speed = (Math.random() * 3 + 3) * obstacleSpeedMultiplier * scaleFactor; // Plus rapide
+        const imageIndex = Math.floor(Math.random() * obstacleImagesLevel1.length);
+        let waveAmplitude = 50 * scaleFactor; // Amplitude de l'ondulation
+        let waveFrequency = 0.05; // Fréquence de l'ondulation
+        obstacles.push({ 
+            x, 
+            y: -size, 
+            size, 
+            speed, 
+            image: obstacleImagesLevel1[imageIndex], 
+            level: 2,
+            originalX: x,
+            waveOffset: Math.random() * Math.PI * 2, // Phase aléatoire
+            waveAmplitude,
+            waveFrequency
+        });
+    }
 }
 
 // Déplacer la fusée avec inertie ou suivant le doigt
@@ -456,17 +576,31 @@ function gameLoop() {
     drawTimer();
     drawLives();
 
+    // Afficher le message de niveau
+    if (showLevelMessage) {
+        ctx.font = `${48 * scaleFactor}px Arial`;
+        ctx.fillStyle = "yellow";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(levelMessage, canvas.width / 2, canvas.height / 2);
+        levelMessageTimer--;
+        if (levelMessageTimer <= 0) {
+            showLevelMessage = false;
+        }
+    }
+
     animationFrameId = requestAnimationFrame(gameLoop);
 }
 
 // Augmenter la difficulté progressivement
 function increaseDifficulty() {
-    difficultyLevel += 1;
-    obstacleSpeedMultiplier += 0.2;
-
-    obstacleSpawnInterval = Math.max(300, obstacleSpawnInterval - 100);
-
-    startObstacleGeneration();
+    if (difficultyLevel === 1) {
+        // Nouvelles difficultés pour Level 1 si nécessaire
+    } else if (difficultyLevel === 2) {
+        obstacleSpeedMultiplier += 0.2;
+        obstacleSpawnInterval = Math.max(300, obstacleSpawnInterval - 100);
+        startObstacleGeneration();
+    }
 }
 
 // Fonction pour charger les meilleurs scores depuis le localStorage
@@ -547,6 +681,12 @@ function updateObstacles() {
     for (let i = obstacles.length - 1; i >= 0; i--) {
         let obstacle = obstacles[i];
         obstacle.y += obstacle.speed;
+
+        if (difficultyLevel === 2 && obstacle.level === 2 && obstacle.image.src.includes("glace.png")) {
+            // Ajouter un mouvement ondulant pour glace.png en Level 2
+            obstacle.x = obstacle.originalX + obstacle.waveAmplitude * Math.sin(obstacle.waveFrequency * obstacle.y + obstacle.waveOffset);
+        }
+
         if (obstacle.y > canvas.height) {
             obstacles.splice(i, 1);
             continue;
@@ -565,6 +705,16 @@ function updateObstacles() {
             }
         }
     }
+}
+
+// Fonction pour passer au Level 2
+function switchToLevel2() {
+    difficultyLevel = 2;
+    obstacleSpeedMultiplier += 0.5; // Augmenter la vitesse des obstacles
+    obstacleSpawnInterval = 800; // Augmenter la fréquence des obstacles
+    showLevel(2);
+    startBackgroundMusic('musique2.mp3'); // Changer la musique pour Level 2
+    generateStars(); // Regénérer les étoiles avec les nouvelles couleurs
 }
 
 // Fonction pour démarrer ou réinitialiser le jeu
@@ -593,11 +743,10 @@ function startGame() {
     canvas.style.display = "block";
     document.getElementById("startButton").style.display = "none";
 
-    // Démarrer la musique de fond
-    backgroundMusic.currentTime = 0;
-    backgroundMusic.play().catch(function(error) {
-        console.log('Échec de la lecture de la musique de fond :', error);
-    });
+    // Démarrer la musique de fond pour Level 1
+    startBackgroundMusic('musique1.mp3');
+
+    showLevel(1); // Afficher le message de Level 1
 
     gameLoop();
 
@@ -608,33 +757,21 @@ function startGame() {
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
         elapsedTime += 1;
+        if (difficultyLevel === 1 && elapsedTime >= 1400) { // 1400 dixièmes de seconde = 140 secondes
+            switchToLevel2();
+        }
     }, 100);
 
     clearInterval(bonusHeartInterval);
     bonusHeartInterval = setInterval(generateBonusHeart, 40000);
 }
 
+// Afficher un message de niveau
+function showLevel(level) {
+    levelMessage = `LEVEL ${level}`;
+    showLevelMessage = true;
+    levelMessageTimer = 180; // Afficher le message pendant 3 secondes (60 FPS)
+}
+
 // Appeler loadHighScores lorsque le script se charge
 loadHighScores();
-
-// Écouteur d'événement pour le bouton de démarrage
-const startButton = document.getElementById("startButton");
-
-startButton.addEventListener("click", function() {
-    // Démarrer la musique de fond
-    backgroundMusic.currentTime = 0;
-    backgroundMusic.play().catch(function(error) {
-        console.log('Échec de la lecture de la musique de fond :', error);
-    });
-    startGame();
-});
-
-startButton.addEventListener("touchstart", function(e) {
-    e.preventDefault();
-    // Démarrer la musique de fond
-    backgroundMusic.currentTime = 0;
-    backgroundMusic.play().catch(function(error) {
-        console.log('Échec de la lecture de la musique de fond :', error);
-    });
-    startGame();
-}, { passive: false });
