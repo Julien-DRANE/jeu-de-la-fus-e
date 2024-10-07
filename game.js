@@ -144,6 +144,10 @@ let extremeDifficultyTriggered = false;
 // Variable pour contrôler la génération de décor
 let decorGenerationActive = false;
 
+// Variable pour contrôler le nombre d'obstacles par spawn
+let obstaclesPerSpawn = 1;
+const maxObstaclesPerSpawn = 10; // Limite maximale pour éviter une surcharge
+
 // Initialiser AudioContext après interaction utilisateur
 let audioContext = null;
 
@@ -175,25 +179,21 @@ function imageLoaded() {
 rocketImage.onload = imageLoaded;
 heartImage.onload = imageLoaded;
 
-// Charger les images des obstacles pour Level 1
 level1ObstacleImages.forEach(img => {
     img.onload = imageLoaded;
     img.onerror = () => alert(`Erreur de chargement de l'image : ${img.src}`);
 });
 
-// Charger les images du décor pour Level 1
 level1DecorImages.forEach(img => {
     img.onload = imageLoaded;
     img.onerror = () => alert(`Erreur de chargement de l'image : ${img.src}`);
 });
 
-// Charger les images des obstacles pour Level 2
 level2ObstacleImages.forEach(img => {
     img.onload = imageLoaded;
     img.onerror = () => alert(`Erreur de chargement de l'image : ${img.src}`);
 });
 
-// Charger les images du décor pour Level 2
 level2DecorImages.forEach(img => {
     img.onload = imageLoaded;
     img.onerror = () => alert(`Erreur de chargement de l'image : ${img.src}`);
@@ -263,7 +263,8 @@ function resetGameVariables() {
     currentLevel = 1; // Réinitialiser le niveau au début
     difficultyLevel = 1;
     obstacleSpeedMultiplier = 1;
-    obstacleSpawnInterval = 800; // Valeur initiale de 1000 ms
+    obstacleSpawnInterval = 800; // Valeur initiale de 800 ms
+    obstaclesPerSpawn = 1; // Réinitialiser le nombre d'obstacles par spawn
     elapsedTime = 0;
     score = 0;
     lives = 3;
@@ -373,8 +374,8 @@ function generateObstacles(count = 1) {
 function startObstacleGeneration() {
     clearTimeout(obstacleGenerationTimeout);
 
-    // Générer plusieurs obstacles à chaque spawn pour augmenter la densité
-    generateObstacles(1); // Génère 1 obstacle à chaque appel
+    // Générer le nombre d'obstacles défini par obstaclesPerSpawn
+    generateObstacles(obstaclesPerSpawn);
 
     // Planifier la prochaine génération
     obstacleGenerationTimeout = setTimeout(startObstacleGeneration, obstacleSpawnInterval);
@@ -589,7 +590,6 @@ function updateRocketPosition() {
 
 // Fonction principale de la boucle de jeu
 let animationFrameId;
-let difficultyInterval;
 
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -621,21 +621,28 @@ function gameLoop() {
 function increaseDifficulty() {
     if (currentLevel === 1 || currentLevel === 2) {
         // Définir les facteurs de difficulté
-        const level1DifficultyFactor = 0.4; // 90% de 0.2 pour Level 1
+        const level1DifficultyFactor = 0.4;
         const level2DifficultyFactor = 0.4;
         const difficultyFactor = currentLevel === 1 ? level1DifficultyFactor : level2DifficultyFactor;
 
         difficultyLevel += 1;
         obstacleSpeedMultiplier += difficultyFactor;
 
+        // Limiter le multiplicateur de vitesse pour éviter une difficulté trop élevée
+        obstacleSpeedMultiplier = Math.min(obstacleSpeedMultiplier, 3);
+
+        // Augmenter le nombre d'obstacles par spawn, avec un maximum
+        obstaclesPerSpawn += 1;
+        obstaclesPerSpawn = Math.min(obstaclesPerSpawn, maxObstaclesPerSpawn);
+
         // Ajustement de l'intervalle de spawn en fonction du niveau
         if (currentLevel === 1) {
-            obstacleSpawnInterval = Math.max(800, obstacleSpawnInterval - 100); // Diminuer l'intervalle à minimum 500 ms
+            obstacleSpawnInterval = Math.max(500, obstacleSpawnInterval - 100); // Diminuer l'intervalle à minimum 500 ms
         } else if (currentLevel === 2) {
             obstacleSpawnInterval = Math.max(100, obstacleSpawnInterval - 50); // Diminuer l'intervalle à minimum 100 ms
         }
 
-        console.log(`Difficulté augmentée au Niveau ${currentLevel} - Niveau de difficulté: ${difficultyLevel}, Multiplicateur de vitesse: ${obstacleSpeedMultiplier.toFixed(2)}, Intervalle de spawn: ${obstacleSpawnInterval}ms`);
+        console.log(`Difficulté augmentée au Niveau ${currentLevel} - Niveau de difficulté: ${difficultyLevel}, Multiplicateur de vitesse: ${obstacleSpeedMultiplier.toFixed(2)}, Nombre d'obstacles par spawn: ${obstaclesPerSpawn}, Intervalle de spawn: ${obstacleSpawnInterval}ms`);
 
         startObstacleGeneration();
     }
@@ -715,7 +722,7 @@ function generateDecorItems() {
         console.log(`Décor ajouté au Niveau ${currentLevel}: ${decor.src}`);
 
         // Ajouter un délai avant de générer le prochain décor
-        const delay = Math.random() * 20000 + 75000; // entre 1 et 3 secondes
+        const delay = Math.random() * 2000 + 7500; // entre 7,5 et 9,5 secondes
         setTimeout(() => {
             decorGenerationActive = false;
             generateDecorItems();
@@ -776,6 +783,9 @@ function switchToLevel2() {
     // Réinitialiser l'intervalle de génération des obstacles
     obstacleSpawnInterval = 1000; // Valeur initiale de 1000 ms
 
+    // Réinitialiser le nombre d'obstacles par spawn
+    obstaclesPerSpawn = 1;
+
     // Arrêter la génération actuelle des obstacles
     clearTimeout(obstacleGenerationTimeout);
 
@@ -795,12 +805,17 @@ function triggerExtremeDifficulty() {
     if (currentLevel !== 2) return; // Assurer que cela ne s'applique qu'au Level 2
 
     // Augmenter le taux de génération des obstacles
-    obstacleSpawnInterval = 900; // Générer un obstacle toutes les 100 ms
+    obstacleSpawnInterval = 900; // Générer un obstacle toutes les 900 ms
 
     // Augmenter le multiplicateur de vitesse, mais le limiter pour éviter l'injouabilité
     obstacleSpeedMultiplier = Math.min(obstacleSpeedMultiplier + 1, 3); // Cap à 3x
 
+    // Augmenter le nombre d'obstacles par spawn, avec un maximum
+    obstaclesPerSpawn += 2;
+    obstaclesPerSpawn = Math.min(obstaclesPerSpawn, maxObstaclesPerSpawn);
+
     console.log('Difficulté extrême déclenchée dans le Level 2');
+    console.log(`Nouveau multiplicateur de vitesse: ${obstacleSpeedMultiplier.toFixed(2)}, Nombre d'obstacles par spawn: ${obstaclesPerSpawn}`);
 
     // Redémarrer la génération des obstacles avec les nouvelles valeurs
     startObstacleGeneration();
@@ -860,7 +875,6 @@ function startBackgroundMusic() {
         console.log('Musique de fond lue avec succès');
     }).catch(error => {
         console.error('Erreur de lecture de la musique de fond :', error);
-        // Suppression de l'alerte pour éviter de gâcher l'expérience utilisateur
         // Optionnel : afficher un message non intrusif dans le jeu
     });
 }
