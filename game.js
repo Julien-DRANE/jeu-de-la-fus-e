@@ -622,7 +622,7 @@ function gameLoop() {
 function increaseDifficulty() {
     if (currentLevel === 1 || currentLevel === 2) {
         // Définir les facteurs de difficulté
-        const level1DifficultyFactor = 0.2; // Ajusté pour ne pas trop augmenter la vitesse
+        const level1DifficultyFactor = 0.13; // Ajusté pour ne pas trop augmenter la vitesse
         const level2DifficultyFactor = 0.2;
         const difficultyFactor = currentLevel === 1 ? level1DifficultyFactor : level2DifficultyFactor;
 
@@ -747,7 +747,7 @@ function updateDecorItems() {
 
 // Fonction pour passer au Level 2 après 120 secondes
 function checkLevelTransition() {
-    if (elapsedTime / 10 >= 120 && currentLevel === 1) {
+    if (elapsedTime / 10 >= 90 && currentLevel === 1) {
         currentLevel = 2;
         switchToLevel2();
     }
