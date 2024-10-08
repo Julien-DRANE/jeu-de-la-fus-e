@@ -623,7 +623,7 @@ function increaseDifficulty() {
     if (currentLevel === 1 || currentLevel === 2) {
         // Définir les facteurs de difficulté
         const level1DifficultyFactor = 0.8; // Ajusté pour ne pas trop augmenter la vitesse
-        const level2DifficultyFactor = 0.4;
+        const level2DifficultyFactor = 0.3;
         const difficultyFactor = currentLevel === 1 ? level1DifficultyFactor : level2DifficultyFactor;
 
         difficultyLevel += 1;
@@ -637,7 +637,7 @@ function increaseDifficulty() {
         if (currentLevel === 1) {
             obstacleSpawnInterval = Math.max(800, obstacleSpawnInterval - 45); // Diminuer l'intervalle à minimum 800 ms
         } else if (currentLevel === 2) {
-            obstacleSpawnInterval = Math.max(100, obstacleSpawnInterval - 50); // Diminuer l'intervalle à minimum 100 ms
+            obstacleSpawnInterval = Math.max(100, obstacleSpawnInterval - 30); // Diminuer l'intervalle à minimum 100 ms
         }
 
         console.log(`Difficulté augmentée au Niveau ${currentLevel} - Niveau de difficulté: ${difficultyLevel}, Nombre d'obstacles par spawn: ${obstaclesPerSpawn}, Intervalle de spawn: ${obstacleSpawnInterval}ms`);
@@ -747,7 +747,7 @@ function updateDecorItems() {
 
 // Fonction pour passer au Level 2 après 120 secondes
 function checkLevelTransition() {
-    if (elapsedTime / 10 >= 100 && currentLevel === 1) {
+    if (elapsedTime / 10 >= 120 && currentLevel === 1) {
         currentLevel = 2;
         switchToLevel2();
     }
