@@ -628,7 +628,7 @@ function increaseDifficulty() {
 
         difficultyLevel += 1;
         // obstacleSpeedMultiplier += difficultyFactor; // Désactivé pour ne pas augmenter la vitesse
-
+        obstacleSpeedMultiplier += difficultyFactor; // Augmenter la vitesse avec le facteur de difficulté
         // Augmenter le nombre d'obstacles par spawn, avec un maximum
         obstaclesPerSpawn += 1;
         obstaclesPerSpawn = Math.min(obstaclesPerSpawn, maxObstaclesPerSpawn);
