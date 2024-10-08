@@ -417,7 +417,7 @@ function detectCollision(obj1, obj2) {
     const deltaY = obj1CenterY - obj2CenterY;
     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-    const collisionThreshold = (obj1.width / 4) + (obj2.size / 4) + (30 * scaleFactor);
+    const collisionThreshold = (obj1.width / 4.5) + (obj2.size / 4.5) + (30 * scaleFactor);
 
     return distance < collisionThreshold;
 }
