@@ -267,7 +267,7 @@ function resetGameVariables() {
     currentDecorIndex = 0; // Réinitialiser l'index des décorations
     currentLevel = 1; // Réinitialiser le niveau au début
     difficultyLevel = 1;
-    obstacleSpeedMultiplier = 1;
+    obstacleSpeedMultiplier = 1.2; // Réinitialiser au multiplicateur initial (par exemple, 1.2)
     obstacleSpawnInterval = 800; // Valeur initiale de 800 ms
     obstaclesPerSpawn = 1; // Réinitialiser le nombre d'obstacles par spawn
     elapsedTime = 0;
@@ -339,7 +339,10 @@ function generateObstacles(count = 1) {
     for (let i = 0; i < count; i++) {
         const size = (Math.random() * 40 + 35) * scaleFactor;
         const x = Math.random() * (canvas.width - size);
-        let speed = (Math.random() * 2 + 1.5) * scaleFactor; // Ajusté pour être légèrement moins rapide
+        let baseSpeed = (Math.random() * 2 + 1.5) * scaleFactor; // Vitesse de base
+        let speed = baseSpeed * obstacleSpeedMultiplier; // Appliquer le multiplicateur
+
+        console.log(`Génération d'un obstacle avec vitesse base: ${baseSpeed.toFixed(2)}, multiplicateur: ${obstacleSpeedMultiplier.toFixed(2)}, vitesse finale: ${speed.toFixed(2)}`);
 
         let imageIndex = 0;
         let image = null;
@@ -622,13 +625,15 @@ function gameLoop() {
 function increaseDifficulty() {
     if (currentLevel === 1 || currentLevel === 2) {
         // Définir les facteurs de difficulté
-        const level1DifficultyFactor = 1.2; // Ajusté pour ne pas trop augmenter la vitesse
-        const level2DifficultyFactor = 1.5;
+        const level1DifficultyFactor = 1.2; // Augmenter la vitesse de 20%
+        const level2DifficultyFactor = 1.5; // Augmenter la vitesse de 50%
         const difficultyFactor = currentLevel === 1 ? level1DifficultyFactor : level2DifficultyFactor;
 
         difficultyLevel += 1;
-        // obstacleSpeedMultiplier += difficultyFactor; // Désactivé pour ne pas augmenter la vitesse
-        obstacleSpeedMultiplier *= difficultyFactor; // Augmenter la vitesse avec le facteur de difficulté
+
+        // Augmenter la vitesse des obstacles
+        obstacleSpeedMultiplier *= difficultyFactor; // Multiplie par >1 pour augmenter la vitesse
+
         // Augmenter le nombre d'obstacles par spawn, avec un maximum
         obstaclesPerSpawn += 1;
         obstaclesPerSpawn = Math.min(obstaclesPerSpawn, maxObstaclesPerSpawn);
@@ -637,10 +642,10 @@ function increaseDifficulty() {
         if (currentLevel === 1) {
             obstacleSpawnInterval = Math.max(800, obstacleSpawnInterval - 45); // Diminuer l'intervalle à minimum 800 ms
         } else if (currentLevel === 2) {
-            obstacleSpawnInterval = Math.max(250, obstacleSpawnInterval - 30); // Diminuer l'intervalle à minimum 100 ms
+            obstacleSpawnInterval = Math.max(250, obstacleSpawnInterval - 30); // Diminuer l'intervalle à minimum 250 ms
         }
 
-        console.log(`Difficulté augmentée au Niveau ${currentLevel} - Niveau de difficulté: ${difficultyLevel}, Nombre d'obstacles par spawn: ${obstaclesPerSpawn}, Intervalle de spawn: ${obstacleSpawnInterval}ms`);
+        console.log(`Difficulté augmentée au Niveau ${currentLevel} - Niveau de difficulté: ${difficultyLevel}, Nombre d'obstacles par spawn: ${obstaclesPerSpawn}, Intervalle de spawn: ${obstacleSpawnInterval}ms, Vitesse des obstacles: ${obstacleSpeedMultiplier.toFixed(2)}`);
 
         startObstacleGeneration();
     }
@@ -720,7 +725,7 @@ function generateDecorItems() {
         console.log(`Décor ajouté au Niveau ${currentLevel}: ${decor.src}`);
 
         // Ajouter un délai avant de générer le prochain décor
-        const delay = Math.random() * 2000 + 50000; // entre 7,5 et 9,5 secondes
+        const delay = Math.random() * 2000 + 5000; // entre 5 et 7 secondes
         setTimeout(() => {
             decorGenerationActive = false;
             generateDecorItems();
@@ -775,8 +780,9 @@ function switchToLevel2() {
     // Régénérer les étoiles avec des couleurs rouges et grises pour le LEVEL 2
     generateStars(["red", "gray"]);
 
-    // Réinitialiser le multiplicateur de vitesse des obstacles (optionnel)
-    obstacleSpeedMultiplier = 1.1;
+    // Augmenter légèrement le multiplicateur de vitesse au passage au Level 2
+    obstacleSpeedMultiplier *= 1.1; // Augmente de 10% au passage au Level 2
+    console.log(`Multiplicateur de vitesse ajusté pour Level 2: ${obstacleSpeedMultiplier.toFixed(2)}`);
 
     // Réinitialiser l'intervalle de génération des obstacles
     obstacleSpawnInterval = 1000; // Valeur initiale de 1000 ms
@@ -803,10 +809,10 @@ function triggerExtremeDifficulty() {
     if (currentLevel !== 2) return; // Assurer que cela ne s'applique qu'au Level 2
 
     // Augmenter le taux de génération des obstacles
-    obstacleSpawnInterval = 700; // Générer un obstacle toutes les 900 ms
+    obstacleSpawnInterval = 700; // Générer un obstacle toutes les 700 ms
 
     // Augmenter légèrement la vitesse des obstacles si nécessaire
-    obstacleSpeedMultiplier = 1.4; // Augmentation légère pour garder une difficulté équilibrée
+    obstacleSpeedMultiplier *= 1.2; // Augmentation de 20% pour garder une difficulté équilibrée
 
     // Augmenter le nombre d'obstacles par spawn, avec un maximum
     obstaclesPerSpawn += 2;
@@ -842,7 +848,7 @@ function startGame() {
     startBackgroundMusic();
 
     gameLoop();
-    difficultyInterval = setInterval(increaseDifficulty, 30000); // Augmenter la difficulté toutes les 20 secondes
+    difficultyInterval = setInterval(increaseDifficulty, 30000); // Augmenter la difficulté toutes les 30 secondes
     startObstacleGeneration();
 
     // Générer le premier décor du Level 1 après un délai
@@ -854,7 +860,7 @@ function startGame() {
         checkLevelTransition();
 
         // Gestion de la progression du Level 2
-        if (currentLevel === 2 && !extremeDifficultyTriggered && (elapsedTime - level2StartTime) >= 1100) { // 1200 dixièmes de seconde = 120 secondes
+        if (currentLevel === 2 && !extremeDifficultyTriggered && (elapsedTime - level2StartTime) >= 1200) { // 1200 dixièmes de seconde = 120 secondes
             triggerExtremeDifficulty();
             extremeDifficultyTriggered = true;
         }
