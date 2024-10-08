@@ -627,7 +627,7 @@ function increaseDifficulty() {
         const difficultyFactor = currentLevel === 1 ? level1DifficultyFactor : level2DifficultyFactor;
 
         difficultyLevel += 1;
-        // obstacleSpeedMultiplier += difficultyFactor; // Désactivé pour ne pas augmenter la vitesse
+        obstacleSpeedMultiplier += difficultyFactor; // Désactivé pour ne pas augmenter la vitesse
 
         // Augmenter le nombre d'obstacles par spawn, avec un maximum
         obstaclesPerSpawn += 1;
