@@ -635,7 +635,7 @@ function increaseDifficulty() {
 
         // Ajustement de l'intervalle de spawn en fonction du niveau
         if (currentLevel === 1) {
-            obstacleSpawnInterval = Math.max(500, obstacleSpawnInterval - 100); // Diminuer l'intervalle à minimum 500 ms
+            obstacleSpawnInterval = Math.max(500, obstacleSpawnInterval - 45); // Diminuer l'intervalle à minimum 500 ms
         } else if (currentLevel === 2) {
             obstacleSpawnInterval = Math.max(100, obstacleSpawnInterval - 50); // Diminuer l'intervalle à minimum 100 ms
         }
