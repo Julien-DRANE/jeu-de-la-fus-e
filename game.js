@@ -776,7 +776,7 @@ function switchToLevel2() {
     generateStars(["red", "gray"]);
 
     // Réinitialiser le multiplicateur de vitesse des obstacles (optionnel)
-    obstacleSpeedMultiplier = 1;
+    obstacleSpeedMultiplier = 1.1;
 
     // Réinitialiser l'intervalle de génération des obstacles
     obstacleSpawnInterval = 1000; // Valeur initiale de 1000 ms
