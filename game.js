@@ -858,10 +858,10 @@ function startGame() {
             triggerExtremeDifficulty();
             extremeDifficultyTriggered = true;
         }
-    }, 300); // Incrémenter elapsedTime toutes les 100 ms
+    }, 100); // Incrémenter elapsedTime toutes les 100 ms
 
     clearInterval(bonusHeartInterval);
-    bonusHeartInterval = setInterval(generateBonusHeart, 30000);
+    bonusHeartInterval = setInterval(generateBonusHeart, 28000);
 }
 
 // Fonction pour démarrer la musique de fond avec gestion correcte de l'AudioContext
