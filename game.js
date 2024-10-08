@@ -641,11 +641,11 @@ function increaseDifficulty() {
         obstacleSpeedMultiplier = Math.min(obstacleSpeedMultiplier, maxObstacleSpeed / (Math.random() * 2 + 1.5) * scaleFactor);
 
         // Fixer obstaclesPerSpawn à 1 pour éviter les paquets
-        obstaclesPerSpawn = 1;
+        obstaclesPerSpawn = 2;
 
         // Ajustement de l'intervalle de spawn en fonction du niveau
         if (currentLevel === 1) {
-            obstacleSpawnInterval = Math.max(800, obstacleSpawnInterval - 45); // Diminuer l'intervalle à minimum 800 ms
+            obstacleSpawnInterval = Math.max(300, obstacleSpawnInterval - 45); // Diminuer l'intervalle à minimum 800 ms
         } else if (currentLevel === 2) {
             obstacleSpawnInterval = Math.max(250, obstacleSpawnInterval - 30); // Diminuer l'intervalle à minimum 250 ms
         }
