@@ -622,8 +622,8 @@ function gameLoop() {
 function increaseDifficulty() {
     if (currentLevel === 1 || currentLevel === 2) {
         // Définir les facteurs de difficulté
-        const level1DifficultyFactor = 0.7; // Ajusté pour ne pas trop augmenter la vitesse
-        const level2DifficultyFactor = 0.2;
+        const level1DifficultyFactor = 0.6; // Ajusté pour ne pas trop augmenter la vitesse
+        const level2DifficultyFactor = 0.4;
         const difficultyFactor = currentLevel === 1 ? level1DifficultyFactor : level2DifficultyFactor;
 
         difficultyLevel += 1;
@@ -803,7 +803,7 @@ function triggerExtremeDifficulty() {
     if (currentLevel !== 2) return; // Assurer que cela ne s'applique qu'au Level 2
 
     // Augmenter le taux de génération des obstacles
-    obstacleSpawnInterval = 900; // Générer un obstacle toutes les 900 ms
+    obstacleSpawnInterval = 600; // Générer un obstacle toutes les 900 ms
 
     // Augmenter légèrement la vitesse des obstacles si nécessaire
     obstacleSpeedMultiplier = 1.2; // Augmentation légère pour garder une difficulté équilibrée
