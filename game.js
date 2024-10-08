@@ -151,7 +151,7 @@ let decorGenerationActive = false;
 
 // Variable pour contrôler le nombre d'obstacles par spawn
 let obstaclesPerSpawn = 1;
-const maxObstaclesPerSpawn = 10; // Limite maximale pour éviter une surcharge
+const maxObstaclesPerSpawn = 6; // Limite maximale pour éviter une surcharge
 
 // Initialiser AudioContext après interaction utilisateur
 let audioContext = null;
