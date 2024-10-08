@@ -151,7 +151,10 @@ let decorGenerationActive = false;
 
 // Variable pour contrôler le nombre d'obstacles par spawn
 let obstaclesPerSpawn = 1;
-const maxObstaclesPerSpawn = 4; // Limite maximale pour éviter une surcharge
+// const maxObstaclesPerSpawn = 4; // Limite maximale pour éviter une surcharge (Commenté)
+
+// Définir une vitesse maximale pour les obstacles
+const maxObstacleSpeed = 10 * scaleFactor; // Définir une vitesse maximale appropriée
 
 // Initialiser AudioContext après interaction utilisateur
 let audioContext = null;
@@ -269,7 +272,7 @@ function resetGameVariables() {
     difficultyLevel = 1;
     obstacleSpeedMultiplier = 1.2; // Réinitialiser au multiplicateur initial (par exemple, 1.2)
     obstacleSpawnInterval = 800; // Valeur initiale de 800 ms
-    obstaclesPerSpawn = 1; // Réinitialiser le nombre d'obstacles par spawn
+    obstaclesPerSpawn = 1; // Fixer à 1 pour éviter les paquets
     elapsedTime = 0;
     score = 0;
     lives = 3;
@@ -341,6 +344,7 @@ function generateObstacles(count = 1) {
         const x = Math.random() * (canvas.width - size);
         let baseSpeed = (Math.random() * 2 + 1.5) * scaleFactor; // Vitesse de base
         let speed = baseSpeed * obstacleSpeedMultiplier; // Appliquer le multiplicateur
+        speed = Math.min(speed, maxObstacleSpeed); // Limiter à la vitesse maximale
 
         console.log(`Génération d'un obstacle avec vitesse base: ${baseSpeed.toFixed(2)}, multiplicateur: ${obstacleSpeedMultiplier.toFixed(2)}, vitesse finale: ${speed.toFixed(2)}`);
 
@@ -378,7 +382,7 @@ function generateObstacles(count = 1) {
 function startObstacleGeneration() {
     clearTimeout(obstacleGenerationTimeout);
 
-    // Générer le nombre d'obstacles défini par obstaclesPerSpawn
+    // Générer le nombre d'obstacles défini par obstaclesPerSpawn (fixé à 1)
     generateObstacles(obstaclesPerSpawn);
 
     // Planifier la prochaine génération
@@ -633,10 +637,11 @@ function increaseDifficulty() {
 
         // Augmenter la vitesse des obstacles
         obstacleSpeedMultiplier *= difficultyFactor; // Multiplie par >1 pour augmenter la vitesse
+        // Limiter le multiplicateur pour éviter de dépasser la vitesse maximale
+        obstacleSpeedMultiplier = Math.min(obstacleSpeedMultiplier, maxObstacleSpeed / (Math.random() * 2 + 1.5) * scaleFactor);
 
-        // Augmenter le nombre d'obstacles par spawn, avec un maximum
-        obstaclesPerSpawn += 1;
-        obstaclesPerSpawn = Math.min(obstaclesPerSpawn, maxObstaclesPerSpawn);
+        // Fixer obstaclesPerSpawn à 1 pour éviter les paquets
+        obstaclesPerSpawn = 1;
 
         // Ajustement de l'intervalle de spawn en fonction du niveau
         if (currentLevel === 1) {
@@ -645,7 +650,7 @@ function increaseDifficulty() {
             obstacleSpawnInterval = Math.max(250, obstacleSpawnInterval - 30); // Diminuer l'intervalle à minimum 250 ms
         }
 
-        console.log(`Difficulté augmentée au Niveau ${currentLevel} - Niveau de difficulté: ${difficultyLevel}, Nombre d'obstacles par spawn: ${obstaclesPerSpawn}, Intervalle de spawn: ${obstacleSpawnInterval}ms, Vitesse des obstacles: ${obstacleSpeedMultiplier.toFixed(2)}`);
+        console.log(`Difficulté augmentée au Niveau ${currentLevel} - Niveau de difficulté: ${difficultyLevel}, Intervalle de spawn: ${obstacleSpawnInterval}ms, Vitesse des obstacles: ${obstacleSpeedMultiplier.toFixed(2)}`);
 
         startObstacleGeneration();
     }
@@ -782,12 +787,13 @@ function switchToLevel2() {
 
     // Augmenter légèrement le multiplicateur de vitesse au passage au Level 2
     obstacleSpeedMultiplier *= 1.1; // Augmente de 10% au passage au Level 2
+    obstacleSpeedMultiplier = Math.min(obstacleSpeedMultiplier, maxObstacleSpeed / (Math.random() * 2 + 1.5) * scaleFactor); // Assurer que le multiplicateur ne pousse pas la vitesse au-delà du max
     console.log(`Multiplicateur de vitesse ajusté pour Level 2: ${obstacleSpeedMultiplier.toFixed(2)}`);
 
     // Réinitialiser l'intervalle de génération des obstacles
     obstacleSpawnInterval = 1000; // Valeur initiale de 1000 ms
 
-    // Réinitialiser le nombre d'obstacles par spawn
+    // Fixer le nombre d'obstacles par spawn à 1
     obstaclesPerSpawn = 1;
 
     // Arrêter la génération actuelle des obstacles
@@ -813,13 +819,13 @@ function triggerExtremeDifficulty() {
 
     // Augmenter légèrement la vitesse des obstacles si nécessaire
     obstacleSpeedMultiplier *= 1.2; // Augmentation de 20% pour garder une difficulté équilibrée
+    obstacleSpeedMultiplier = Math.min(obstacleSpeedMultiplier, maxObstacleSpeed / (Math.random() * 2 + 1.5) * scaleFactor); // Assurer que le multiplicateur ne pousse pas la vitesse au-delà du max
 
-    // Augmenter le nombre d'obstacles par spawn, avec un maximum
-    obstaclesPerSpawn += 2;
-    obstaclesPerSpawn = Math.min(obstaclesPerSpawn, maxObstaclesPerSpawn);
+    // Fixer obstaclesPerSpawn à 1 pour éviter les paquets
+    obstaclesPerSpawn = 1;
 
     console.log('Difficulté extrême déclenchée dans le Level 2');
-    console.log(`Nouveau multiplicateur de vitesse: ${obstacleSpeedMultiplier.toFixed(2)}, Nombre d'obstacles par spawn: ${obstaclesPerSpawn}`);
+    console.log(`Nouveau multiplicateur de vitesse: ${obstacleSpeedMultiplier.toFixed(2)}, Intervalle de spawn: ${obstacleSpawnInterval}ms`);
 
     // Redémarrer la génération des obstacles avec les nouvelles valeurs
     startObstacleGeneration();
