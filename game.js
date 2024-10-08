@@ -472,7 +472,7 @@ function drawLives() {
 
 // Générer le cœur bonus
 function generateBonusHeart() {
-    const size = 30 * scaleFactor;
+    const size = 32 * scaleFactor;
     const x = Math.random() * (canvas.width - size);
     bonusHeart = {
         x: x,
@@ -806,7 +806,7 @@ function triggerExtremeDifficulty() {
     obstacleSpawnInterval = 700; // Générer un obstacle toutes les 900 ms
 
     // Augmenter légèrement la vitesse des obstacles si nécessaire
-    obstacleSpeedMultiplier = 1.2; // Augmentation légère pour garder une difficulté équilibrée
+    obstacleSpeedMultiplier = 1.4; // Augmentation légère pour garder une difficulté équilibrée
 
     // Augmenter le nombre d'obstacles par spawn, avec un maximum
     obstaclesPerSpawn += 2;
@@ -854,11 +854,11 @@ function startGame() {
         checkLevelTransition();
 
         // Gestion de la progression du Level 2
-        if (currentLevel === 2 && !extremeDifficultyTriggered && (elapsedTime - level2StartTime) >= 1000) { // 1200 dixièmes de seconde = 120 secondes
+        if (currentLevel === 2 && !extremeDifficultyTriggered && (elapsedTime - level2StartTime) >= 1100) { // 1200 dixièmes de seconde = 120 secondes
             triggerExtremeDifficulty();
             extremeDifficultyTriggered = true;
         }
-    }, 100); // Incrémenter elapsedTime toutes les 100 ms
+    }, 300); // Incrémenter elapsedTime toutes les 100 ms
 
     clearInterval(bonusHeartInterval);
     bonusHeartInterval = setInterval(generateBonusHeart, 30000);
