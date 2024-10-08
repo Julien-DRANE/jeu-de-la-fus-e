@@ -637,7 +637,7 @@ function increaseDifficulty() {
         if (currentLevel === 1) {
             obstacleSpawnInterval = Math.max(800, obstacleSpawnInterval - 45); // Diminuer l'intervalle à minimum 800 ms
         } else if (currentLevel === 2) {
-            obstacleSpawnInterval = Math.max(400, obstacleSpawnInterval - 30); // Diminuer l'intervalle à minimum 100 ms
+            obstacleSpawnInterval = Math.max(250, obstacleSpawnInterval - 30); // Diminuer l'intervalle à minimum 100 ms
         }
 
         console.log(`Difficulté augmentée au Niveau ${currentLevel} - Niveau de difficulté: ${difficultyLevel}, Nombre d'obstacles par spawn: ${obstaclesPerSpawn}, Intervalle de spawn: ${obstacleSpawnInterval}ms`);
