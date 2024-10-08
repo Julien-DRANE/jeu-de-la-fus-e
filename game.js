@@ -124,7 +124,7 @@ const backgroundMusic = document.getElementById("backgroundMusic");
 
 // Variables pour la difficulté et le score
 let difficultyLevel = 1;
-let obstacleSpeedMultiplier = 1; // Gardé si vous souhaitez ajuster légèrement la vitesse
+let obstacleSpeedMultiplier = 1.2; // Gardé si vous souhaitez ajuster légèrement la vitesse
 let elapsedTime = 0; // En dixièmes de seconde
 let timerInterval;
 
