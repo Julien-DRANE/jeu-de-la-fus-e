@@ -361,7 +361,7 @@ function generateObstacles(count = 1) {
                 speed: speed,
                 image: image,
                 oscillate: true,
-                oscillateAmplitude: 180 * scaleFactor,
+                oscillateAmplitude: 380 * scaleFactor,
                 oscillateFrequency: 0.05,
                 oscillateOffset: Math.random() * Math.PI * 2
             });
@@ -417,7 +417,7 @@ function detectCollision(obj1, obj2) {
     const deltaY = obj1CenterY - obj2CenterY;
     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-    const collisionThreshold = (obj1.width / 2) + (obj2.size / 2) + (30 * scaleFactor);
+    const collisionThreshold = (obj1.width / 3) + (obj2.size / 3) + (30 * scaleFactor);
 
     return distance < collisionThreshold;
 }
