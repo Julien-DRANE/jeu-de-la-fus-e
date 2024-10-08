@@ -622,8 +622,8 @@ function gameLoop() {
 function increaseDifficulty() {
     if (currentLevel === 1 || currentLevel === 2) {
         // Définir les facteurs de difficulté
-        const level1DifficultyFactor = 0.6; // Ajusté pour ne pas trop augmenter la vitesse
-        const level2DifficultyFactor = 0.4;
+        const level1DifficultyFactor = 0.8; // Ajusté pour ne pas trop augmenter la vitesse
+        const level2DifficultyFactor = 0.5;
         const difficultyFactor = currentLevel === 1 ? level1DifficultyFactor : level2DifficultyFactor;
 
         difficultyLevel += 1;
@@ -720,7 +720,7 @@ function generateDecorItems() {
         console.log(`Décor ajouté au Niveau ${currentLevel}: ${decor.src}`);
 
         // Ajouter un délai avant de générer le prochain décor
-        const delay = Math.random() * 2000 + 75000; // entre 7,5 et 9,5 secondes
+        const delay = Math.random() * 2000 + 50000; // entre 7,5 et 9,5 secondes
         setTimeout(() => {
             decorGenerationActive = false;
             generateDecorItems();
@@ -747,7 +747,7 @@ function updateDecorItems() {
 
 // Fonction pour passer au Level 2 après 120 secondes
 function checkLevelTransition() {
-    if (elapsedTime / 10 >= 90 && currentLevel === 1) {
+    if (elapsedTime / 10 >= 100 && currentLevel === 1) {
         currentLevel = 2;
         switchToLevel2();
     }
@@ -806,7 +806,7 @@ function triggerExtremeDifficulty() {
     obstacleSpawnInterval = 600; // Générer un obstacle toutes les 900 ms
 
     // Augmenter légèrement la vitesse des obstacles si nécessaire
-    obstacleSpeedMultiplier = 1.2; // Augmentation légère pour garder une difficulté équilibrée
+    obstacleSpeedMultiplier = 1.3; // Augmentation légère pour garder une difficulté équilibrée
 
     // Augmenter le nombre d'obstacles par spawn, avec un maximum
     obstaclesPerSpawn += 2;
