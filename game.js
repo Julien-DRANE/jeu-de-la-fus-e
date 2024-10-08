@@ -720,7 +720,7 @@ function generateDecorItems() {
         console.log(`Décor ajouté au Niveau ${currentLevel}: ${decor.src}`);
 
         // Ajouter un délai avant de générer le prochain décor
-        const delay = Math.random() * 2000 + 7500; // entre 7,5 et 9,5 secondes
+        const delay = Math.random() * 2000 + 75000; // entre 7,5 et 9,5 secondes
         setTimeout(() => {
             decorGenerationActive = false;
             generateDecorItems();
@@ -806,7 +806,7 @@ function triggerExtremeDifficulty() {
     obstacleSpawnInterval = 900; // Générer un obstacle toutes les 900 ms
 
     // Augmenter légèrement la vitesse des obstacles si nécessaire
-    obstacleSpeedMultiplier = 1.1; // Augmentation légère pour garder une difficulté équilibrée
+    obstacleSpeedMultiplier = 1.2; // Augmentation légère pour garder une difficulté équilibrée
 
     // Augmenter le nombre d'obstacles par spawn, avec un maximum
     obstaclesPerSpawn += 2;
@@ -842,7 +842,7 @@ function startGame() {
     startBackgroundMusic();
 
     gameLoop();
-    difficultyInterval = setInterval(increaseDifficulty, 20000); // Augmenter la difficulté toutes les 20 secondes
+    difficultyInterval = setInterval(increaseDifficulty, 30000); // Augmenter la difficulté toutes les 20 secondes
     startObstacleGeneration();
 
     // Générer le premier décor du Level 1 après un délai
@@ -854,14 +854,14 @@ function startGame() {
         checkLevelTransition();
 
         // Gestion de la progression du Level 2
-        if (currentLevel === 2 && !extremeDifficultyTriggered && (elapsedTime - level2StartTime) >= 1200) { // 1200 dixièmes de seconde = 120 secondes
+        if (currentLevel === 2 && !extremeDifficultyTriggered && (elapsedTime - level2StartTime) >= 1000) { // 1200 dixièmes de seconde = 120 secondes
             triggerExtremeDifficulty();
             extremeDifficultyTriggered = true;
         }
     }, 100); // Incrémenter elapsedTime toutes les 100 ms
 
     clearInterval(bonusHeartInterval);
-    bonusHeartInterval = setInterval(generateBonusHeart, 40000);
+    bonusHeartInterval = setInterval(generateBonusHeart, 30000);
 }
 
 // Fonction pour démarrer la musique de fond avec gestion correcte de l'AudioContext
