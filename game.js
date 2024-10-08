@@ -128,6 +128,11 @@ let obstacleSpeedMultiplier = 1; // Gardé si vous souhaitez ajuster légèremen
 let elapsedTime = 0; // En dixièmes de seconde
 let timerInterval;
 
+// Variables pour les intervalles
+let difficultyInterval; // Déclaration ajoutée
+let obstacleSpawnInterval = 1000; // Initialement 1000 ms
+let obstacleGenerationTimeout;
+
 // Variables pour les vies
 let lives = 3; // Nombre initial de vies
 
@@ -328,10 +333,6 @@ function submitScore() {
         alert('Veuillez entrer votre nom.');
     }
 }
-
-// Variables pour la génération des obstacles
-let obstacleSpawnInterval = 1000; // Initialement 1000 ms
-let obstacleGenerationTimeout;
 
 // Fonction pour générer plusieurs obstacles
 function generateObstacles(count = 1) {
