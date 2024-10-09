@@ -624,8 +624,8 @@ function gameLoop() {
 function increaseDifficulty() {
     if (currentLevel === 1 || currentLevel === 2) {
         // Définir les facteurs de difficulté
-        const level1DifficultyFactor = 0.6;
-        const level2DifficultyFactor = 0.7;
+        const level1DifficultyFactor = 1.03;
+        const level2DifficultyFactor = 1.05;
         const difficultyFactor = currentLevel === 1 ? level1DifficultyFactor : level2DifficultyFactor;
 
         difficultyLevel += 1;
