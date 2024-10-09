@@ -6,7 +6,7 @@ const ctx = canvas.getContext("2d");
 const scaleFactor = 4 / 6; // Réduction de la taille par un facteur de 4/6 (≈0,6667)
 
 // **Ajoutez cette ligne ici**
-const maxObstacleSpeed = 4 * scaleFactor; // Exemple de limite
+const maxObstacleSpeed = 6 * scaleFactor; // Exemple de limite
 
 // Dimensions du canvas
 canvas.width = window.innerWidth;
@@ -270,7 +270,7 @@ function resetGameVariables() {
     currentDecorIndex = 0; // Réinitialiser l'index des décorations
     currentLevel = 1; // Réinitialiser le niveau au début
     difficultyLevel = 1;
-    obstacleSpeedMultiplier = 1;
+    obstacleSpeedMultiplier = 1.2;
     obstacleSpawnInterval = 800; // Valeur initiale de 800 ms
     obstaclesPerSpawn = 1; // Réinitialiser le nombre d'obstacles par spawn
     elapsedTime = 0;
@@ -629,7 +629,7 @@ function increaseDifficulty() {
         const difficultyFactor = currentLevel === 1 ? level1DifficultyFactor : level2DifficultyFactor;
 
         difficultyLevel += 1;
-        obstacleSpeedMultiplier += difficultyFactor; // Augmente la vitesse
+        obstacleSpeedMultiplier *= difficultyFactor; // Augmente la vitesse
 
         // Augmenter le nombre d'obstacles par spawn, avec un maximum
         obstaclesPerSpawn += 1;
