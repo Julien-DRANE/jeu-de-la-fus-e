@@ -620,7 +620,6 @@ function gameLoop() {
 
     animationFrameId = requestAnimationFrame(gameLoop);
 }
-let obstacleSpeedMultiplier = 1.2; // Initialement 1.2
 
 function increaseDifficulty() {
     if (currentLevel === 1 || currentLevel === 2) {
