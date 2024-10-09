@@ -5,6 +5,9 @@ const ctx = canvas.getContext("2d");
 // Facteur de réduction
 const scaleFactor = 4 / 6; // Réduction de la taille par un facteur de 4/6 (≈0,6667)
 
+// **Ajoutez cette ligne ici**
+const maxObstacleSpeed = 10 * scaleFactor; // Exemple de limite
+
 // Dimensions du canvas
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -333,13 +336,12 @@ function submitScore() {
         alert('Veuillez entrer votre nom.');
     }
 }
-
-// Fonction pour générer plusieurs obstacles
 function generateObstacles(count = 1) {
     for (let i = 0; i < count; i++) {
         const size = (Math.random() * 40 + 35) * scaleFactor;
         const x = Math.random() * (canvas.width - size);
-        let speed = (Math.random() * 2 + 1.5) * scaleFactor; // Ajusté pour être légèrement moins rapide
+        let baseSpeed = (Math.random() * 2 + 1.5) * scaleFactor;
+        let speed = Math.min(baseSpeed * obstacleSpeedMultiplier, maxObstacleSpeed); // Appliquer le multiplicateur et limiter la vitesse
 
         let imageIndex = 0;
         let image = null;
@@ -370,6 +372,7 @@ function generateObstacles(count = 1) {
         }
     }
 }
+
 
 // Fonction pour démarrer la génération des obstacles avec possibilité de multiples spawn
 function startObstacleGeneration() {
@@ -617,17 +620,17 @@ function gameLoop() {
 
     animationFrameId = requestAnimationFrame(gameLoop);
 }
+let obstacleSpeedMultiplier = 1.2; // Initialement 1.2
 
-// Fonction pour augmenter la difficulté
 function increaseDifficulty() {
     if (currentLevel === 1 || currentLevel === 2) {
         // Définir les facteurs de difficulté
-        const level1DifficultyFactor = 1.2; // Ajusté pour ne pas trop augmenter la vitesse
+        const level1DifficultyFactor = 1.2;
         const level2DifficultyFactor = 1.5;
         const difficultyFactor = currentLevel === 1 ? level1DifficultyFactor : level2DifficultyFactor;
 
         difficultyLevel += 1;
-        obstacleSpeedMultiplier += difficultyFactor; // Désactivé pour ne pas augmenter la vitesse
+        obstacleSpeedMultiplier += difficultyFactor; // Augmente la vitesse
 
         // Augmenter le nombre d'obstacles par spawn, avec un maximum
         obstaclesPerSpawn += 1;
@@ -635,9 +638,9 @@ function increaseDifficulty() {
 
         // Ajustement de l'intervalle de spawn en fonction du niveau
         if (currentLevel === 1) {
-            obstacleSpawnInterval = Math.max(800, obstacleSpawnInterval - 45); // Diminuer l'intervalle à minimum 800 ms
+            obstacleSpawnInterval = Math.max(800, obstacleSpawnInterval - 45);
         } else if (currentLevel === 2) {
-            obstacleSpawnInterval = Math.max(250, obstacleSpawnInterval - 30); // Diminuer l'intervalle à minimum 100 ms
+            obstacleSpawnInterval = Math.max(250, obstacleSpawnInterval - 30);
         }
 
         console.log(`Difficulté augmentée au Niveau ${currentLevel} - Niveau de difficulté: ${difficultyLevel}, Nombre d'obstacles par spawn: ${obstaclesPerSpawn}, Intervalle de spawn: ${obstacleSpawnInterval}ms`);
@@ -842,7 +845,7 @@ function startGame() {
     startBackgroundMusic();
 
     gameLoop();
-    difficultyInterval = setInterval(increaseDifficulty, 30000); // Augmenter la difficulté toutes les 20 secondes
+    difficultyInterval = setInterval(increaseDifficulty, 25000); // Augmenter la difficulté toutes les 25 secondes
     startObstacleGeneration();
 
     // Générer le premier décor du Level 1 après un délai
