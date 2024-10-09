@@ -6,7 +6,7 @@ const ctx = canvas.getContext("2d");
 const scaleFactor = 4 / 6; // Réduction de la taille par un facteur de 4/6 (≈0,6667)
 
 // **Ajoutez cette ligne ici**
-const maxObstacleSpeed = 10 * scaleFactor; // Exemple de limite
+const maxObstacleSpeed = 4 * scaleFactor; // Exemple de limite
 
 // Dimensions du canvas
 canvas.width = window.innerWidth;
@@ -624,8 +624,8 @@ function gameLoop() {
 function increaseDifficulty() {
     if (currentLevel === 1 || currentLevel === 2) {
         // Définir les facteurs de difficulté
-        const level1DifficultyFactor = 1.2;
-        const level2DifficultyFactor = 1.5;
+        const level1DifficultyFactor = 0.6;
+        const level2DifficultyFactor = 0.7;
         const difficultyFactor = currentLevel === 1 ? level1DifficultyFactor : level2DifficultyFactor;
 
         difficultyLevel += 1;
